@@ -1,6 +1,8 @@
 package de.romankreisel.igcsync
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
@@ -17,6 +19,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     private lateinit var navController: NavController
     private lateinit var navHostFragment: Fragment
 
+    companion object {
+        const val REQUEST_CODE_IGC_DATA_DIRECTORY = 1000
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -26,6 +33,27 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         this.navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)!!
         this.navController = this.navHostFragment.findNavController()
         this.navController.addOnDestinationChangedListener(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_IGC_DATA_DIRECTORY) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                val uri = data.data
+                if (uri != null) {
+                    this.contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                    preferences.edit()
+                        .putString(
+                            getString(R.string.preference_igc_directory_url),
+                            uri.toString()
+                        )
+                        .apply()
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

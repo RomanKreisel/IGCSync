@@ -1,12 +1,14 @@
 package de.romankreisel.igcsync
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
@@ -27,8 +29,8 @@ class FlightListFragment : Fragment(), Observer<WorkInfo> {
     private lateinit var preferences: SharedPreferences
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_flight_list, container, false)
@@ -50,35 +52,43 @@ class FlightListFragment : Fragment(), Observer<WorkInfo> {
 
     private fun importFlights() {
         val igcDirectoryUrlString = this.preferences.getString(
-            getString(R.string.preference_igc_directory_url),
-            null
+                getString(R.string.preference_igc_directory_url),
+                null
         )
         if (igcDirectoryUrlString == null || igcDirectoryUrlString.isBlank()) {
             Toast.makeText(
-                this.requireContext(),
-                getString(R.string.warning_error_accessing_data_directory),
-                Toast.LENGTH_LONG
+                    this.requireContext(),
+                    getString(R.string.warning_error_accessing_data_directory),
+                    Toast.LENGTH_LONG
             ).show()
+            requireActivity().startActivityForResult(
+                    Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
+                    MainActivity.REQUEST_CODE_IGC_DATA_DIRECTORY
+            )
             return
         }
 
         val igcDirectoryDocumentFile =
-            DocumentFile.fromTreeUri(this.requireContext(), Uri.parse(igcDirectoryUrlString))
+                DocumentFile.fromTreeUri(this.requireContext(), Uri.parse(igcDirectoryUrlString))
 
         if (igcDirectoryDocumentFile == null || !igcDirectoryDocumentFile.exists() || !igcDirectoryDocumentFile.isDirectory || !igcDirectoryDocumentFile.canRead()) {
             Toast.makeText(
-                this.requireContext(),
-                getString(R.string.warning_error_accessing_data_directory),
-                Toast.LENGTH_LONG
+                    this.requireContext(),
+                    getString(R.string.warning_error_accessing_data_directory),
+                    Toast.LENGTH_LONG
             ).show()
             return
         }
         val scanWorkRequest = OneTimeWorkRequest.Builder(ImportWorker::class.java).setInputData(
-            androidx.work.Data.Builder().putString("dataUrl", igcDirectoryUrlString).build()
+                androidx.work.Data.Builder().putString("dataUrl", igcDirectoryUrlString).build()
         ).build()
         val workManager = WorkManager.getInstance(this.requireContext())
         this.floatingImportButton.isEnabled = false
         Toast.makeText(this.requireContext(), "Started", Toast.LENGTH_LONG).show()
+
+        val animation = AnimationUtils.loadAnimation(this.requireContext(), R.anim.pulse)
+        this.floatingImportButton.startAnimation(animation)
+
         workManager.enqueue(scanWorkRequest)
 
         workManager.getWorkInfoByIdLiveData(scanWorkRequest.id).observeForever(this)
@@ -88,6 +98,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo> {
         when (workInfo?.state) {
             WorkInfo.State.SUCCEEDED -> {
                 this.floatingImportButton.isEnabled = true
+                this.floatingImportButton.animation.cancel()
                 Toast.makeText(this.requireContext(), "Succeeded", Toast.LENGTH_LONG).show()
 
                 /*this.importViewModel.text.apply {
@@ -108,6 +119,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo> {
             }
             WorkInfo.State.FAILED -> {
                 Toast.makeText(this.requireContext(), "Failed", Toast.LENGTH_LONG).show()
+                //TODO: better error message
                 /*this.importViewModel.text.apply {
                     value = getString(
                         R.string.label_scan_failed,
@@ -119,6 +131,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo> {
             }
             WorkInfo.State.CANCELLED -> {
                 Toast.makeText(this.requireContext(), "Cancelled", Toast.LENGTH_LONG).show()
+                //TODO: better error message
                 /*this.importViewModel.text.apply {
                     value = getString(R.string.label_scan_cancelled)
                 }
@@ -127,10 +140,13 @@ class FlightListFragment : Fragment(), Observer<WorkInfo> {
                  */
             }
             WorkInfo.State.RUNNING -> {
-                /*val filesProgressed = workInfo.progress.getInt("filesProgressed", 0)
+                /*
+                val filesProgressed = workInfo.progress.getInt("filesProgressed", 0)
                 val filesTotal = workInfo.progress.getInt("filesTotal", 0)
                 if (filesTotal > 0) {
-                    this.importViewModel.text.apply {
+                    this.floatingImportButton.animate()
+                }*/
+                /*    this.importViewModel.text.apply {
                         value = getString(
                             R.string.label_scanning_progress,
                             (filesProgressed * 100 / filesTotal)

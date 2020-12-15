@@ -39,5 +39,5 @@
         android:layout_margin="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/button_description_import_new_flights"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@android:drawable/stat_sys_download" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,6 +1,5 @@
 package de.romankreisel.igcsync.ui.settings
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -18,6 +17,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
+import de.romankreisel.igcsync.MainActivity
 import de.romankreisel.igcsync.R
 
 class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
@@ -75,9 +75,9 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         val selectDirectoryButton =
             root.findViewById<MaterialButton>(R.id.button_select_data_directory)
         selectDirectoryButton.setOnClickListener {
-            startActivityForResult(
+            requireActivity().startActivityForResult(
                 Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
-                REQUEST_CODE_IGC_DATA_DIRECTORY
+                MainActivity.REQUEST_CODE_IGC_DATA_DIRECTORY
             )
         }
         settingsViewModel.selectDirectoryButtonText.observe(viewLifecycleOwner, {
@@ -247,31 +247,6 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_IGC_DATA_DIRECTORY) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                val uri = data.data
-                if (uri != null) {
-                    this.requireActivity().contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                    preferences.edit()
-                        .putString(
-                            getString(R.string.preference_igc_directory_url),
-                            uri.toString()
-                        )
-                        .apply()
-                    this.updateViewModel(preferences)
-                }
-            }
-        }
-    }
-
-    companion object {
-        const val REQUEST_CODE_IGC_DATA_DIRECTORY = 1000
-    }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (sharedPreferences != null) {
