@@ -84,7 +84,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo> {
         ).build()
         val workManager = WorkManager.getInstance(this.requireContext())
         this.floatingImportButton.isEnabled = false
-        Toast.makeText(this.requireContext(), "Started", Toast.LENGTH_LONG).show()
+        Toast.makeText(this.requireContext(), getString(R.string.toast_scan_for_new_flights), Toast.LENGTH_LONG).show()
 
         val animation = AnimationUtils.loadAnimation(this.requireContext(), R.anim.pulse)
         this.floatingImportButton.startAnimation(animation)
@@ -99,23 +99,19 @@ class FlightListFragment : Fragment(), Observer<WorkInfo> {
             WorkInfo.State.SUCCEEDED -> {
                 this.floatingImportButton.isEnabled = true
                 this.floatingImportButton.animation.cancel()
-                Toast.makeText(this.requireContext(), "Succeeded", Toast.LENGTH_LONG).show()
-
-                /*this.importViewModel.text.apply {
-                        val fileCount = workInfo.outputData.getInt("fileCount", 0)
-                        if (fileCount > 1) {
-                            value = getString(
-                                R.string.label_scan_finished_with_files_found,
-                                workInfo.outputData.getInt("fileCount", 0)
-                            )
-                        } else if (fileCount > 0) {
-                            value = getString(R.string.label_scan_finished_with_file_found)
-                        } else {
-                            value = getString(R.string.label_scan_finished_with_no_files_found)
-                        }
-                    }
-                    this.importViewModel.scanButtonAvailable.apply { value = true }
-                     */
+                val fileCount = workInfo.outputData.getInt("fileCount", 0)
+                val text: String
+                if (fileCount > 1) {
+                    text = getString(
+                            R.string.label_scan_finished_with_files_found,
+                            workInfo.outputData.getInt("fileCount", 0)
+                    )
+                } else if (fileCount > 0) {
+                    text = getString(R.string.label_scan_finished_with_file_found)
+                } else {
+                    text = getString(R.string.label_scan_finished_with_no_files_found)
+                }
+                Toast.makeText(this.requireContext(), text, Toast.LENGTH_LONG).show()
             }
             WorkInfo.State.FAILED -> {
                 Toast.makeText(this.requireContext(), "Failed", Toast.LENGTH_LONG).show()
