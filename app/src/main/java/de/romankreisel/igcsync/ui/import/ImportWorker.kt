@@ -8,6 +8,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data.Builder
 import androidx.work.WorkerParameters
 import de.romankreisel.igcsync.data.IgcSyncDatabase
+import de.romankreisel.igcsync.data.igc.IgcException
+import de.romankreisel.igcsync.data.igc.IgcParser
 import de.romankreisel.igcsync.data.model.IgcFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -90,14 +92,12 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
                     //We never saw this content before, so we should remember the content for upload
                     ++newFiles
                     igcFile.content = igcContent
-                    /* TODO:
                     try {
                         val igcData = IgcParser.parse(igcContent)
                         igcFile.startDate = igcData.startTime
                     } catch (e: IgcException) {
                         Log.e("", "Error parsing IGC file", e)
                     }
-                    */
                     igcFiles.add(igcFile)
                 }
             } catch (exception: Exception) {
