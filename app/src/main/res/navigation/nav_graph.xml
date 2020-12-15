@@ -7,13 +7,12 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="de.romankreisel.igcsync.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
-
+        android:name="de.romankreisel.igcsync.FlightListFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_flight_list">
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_FirstFragment_to_SettingsFragment"
+            app:destination="@id/SettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -25,4 +24,12 @@
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/SettingsFragment"
+        android:name="de.romankreisel.igcsync.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
+    <action
+        android:id="@+id/action_to_SettingsFragment"
+        app:destination="@id/SettingsFragment" />
 </navigation>

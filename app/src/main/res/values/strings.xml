@@ -1,5 +1,64 @@
 <resources>
-    <string name="app_name">IGC Sync</string>
+    <!-- General stuff -->
+    <string name="app_name" translatable="false">IGC Sync</string>
+
+    <!-- preferences -->
+    <string name="preference_igc_directory_url" translatable="false">igc_directory</string>
+    <string name="preference_glider_category" translatable="false">glider_category</string>
+    <string name="preference_start_type" translatable="false">start_type</string>
+    <string name="preference_glider_manufacturer" translatable="false">glider_manufacturer</string>
+    <string name="preference_glider_certification" translatable="false">glider_certification</string>
+    <string name="preference_glider_model" translatable="false">glider_model</string>
+    <string name="preference_glider_size" translatable="false">glider_size</string>
+
+    <!-- programmatic strings -->
+    <string name="default_leonardo_submit_flight_url" translatable="false">http://www.xc.dhv.de/xc/modules/leonardo/flight_submit.php</string>
+    <string name="default_minimum_flight_duration_seconds" translatable="false">60</string>
+
+
+    <!-- Translatable UI strings -->
+    <string name="title_import">Import</string>
+    <string name="title_upload">Upload</string>
+    <string name="title_settings">Settings</string>
+    <string name="label_data_directory">Data directory:</string>
+    <string name="label_data_directory_not_set">No data directory set yet</string>
+    <string name="button_select_data_directory">Select</string>
+    <string name="label_data_directory_scan_in_progress">Scanning data directory</string>
+    <string name="label_data_directory_ready_for_scan">Ready for import</string>
+    <string name="label_data_directory_not_ready_for_scan">Data directory cannot be accessed. Invalid settings or Vario removed from USB?</string>
+    <string name="label_perform_scan">Import new IGC files</string>
+    <string name="warning_error_accessing_data_directory">An error occurred accessing the data directory, please check the settings.</string>
+    <string name="label_scanning">Scanning for new files…</string>
+    <string name="label_scan_finished_with_files_found">Scan finished,  %1$d new flights found</string>
+    <string name="label_scan_finished_with_file_found">Scan finished, one new flight found</string>
+    <string name="label_scan_finished_with_no_files_found">Scan finished, no new flights found</string>
+    <string name="label_scan_failed">The scan failed on file %1$s</string>
+    <string name="label_scan_cancelled">Scan cancelled</string>
+    <string name="label_scanning_progress">Importing flights (%1$d%%)</string>
+    <string name="button_ignore">Ignore</string>
+    <string name="button_upload_single">Upload</string>
+    <string name="headline_dhv_xc" translatable="false">DHV-XC</string>
+    <string name="headline_general">General settings</string>
+    <string name="label_username">Username</string>
+    <string name="hint_username_john_doe">JohnDoe</string>
+    <string name="label_password">Password</string>
+    <string name="hint_password">YourSecretPassword</string>
+    <string name="label_dhv_xc_flight_submit_url" translatable="false">URL</string>
+    <string name="headline_pilot_settings">Pilot settings</string>
+    <string name="label_glider_category">Glider Category</string>
+    <string name="label_start_type">Start type</string>
+    <string name="label_glider_manufacturer">Glider manufacturer</string>
+    <string name="label_glider_model">Glider model</string>
+    <string name="label_glider_size">Glider size</string>
+    <string name="label_glider_certification">Glider certification</string>
+    <string name="hint_glider_manufacturer" translatable="false">Skywalk</string>
+    <string name="hint_glider_model" translatable="false">Masala</string>
+    <string name="hint_glider_size" translatable="false">S</string>
+    <string name="label_ignore_flights_below_seconds">Ignore flights below (seconds)</string>
+    <string name="toast_select_data_directory_first">Before you can use the app, you need to connect your vario and select it as data directory.</string>
+    <string name="preference_minimum_flight_duration_seconds" translatable="false">minimum_flight_duration_seconds</string>
+    <string name="description_floating_add_button">Import flights</string>
+
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -10,4 +69,6 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="button_description_import_new_flights">Import new flights</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

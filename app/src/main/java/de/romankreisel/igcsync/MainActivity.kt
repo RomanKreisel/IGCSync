@@ -1,23 +1,31 @@
 package de.romankreisel.igcsync
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.fragment.findNavController
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
+
+    private lateinit var preferences: SharedPreferences
+    private lateinit var navController: NavController
+    private lateinit var navHostFragment: Fragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
+        this.preferences = this.getPreferences(Context.MODE_PRIVATE)
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+        this.navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)!!
+        this.navController = this.navHostFragment.findNavController()
+        this.navController.addOnDestinationChangedListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -31,8 +39,28 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                this@MainActivity.navController.navigate(R.id.action_to_SettingsFragment)
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    override fun onDestinationChanged(
+        controller: NavController,
+        destination: NavDestination,
+        arguments: Bundle?
+    ) {
+        if (destination.id == R.id.FirstFragment) {
+            getSupportActionBar()?.setDisplayHomeAsUpEnabled(false)
+        } else {
+            getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
         }
     }
 }

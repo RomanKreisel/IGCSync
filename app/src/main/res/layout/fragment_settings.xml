@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:stretchColumns="1">
+
+        <TableRow>
+
+            <TextView
+                android:layout_span="2"
+                android:text="@string/headline_general"
+                android:textStyle="bold" />
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/label_igc_data_directory"
+                android:labelFor="@id/button_select_data_directory"
+                android:text="@string/label_data_directory" />
+
+            <Button
+                android:id="@+id/button_select_data_directory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxWidth="150sp"
+                android:singleLine="true"
+                android:text="@string/button_select_data_directory"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textSize="15sp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:labelFor="@+id/text_minimim_flight_duration_seconds"
+                android:maxWidth="0dp"
+                android:text="@string/label_ignore_flights_below_seconds" />
+
+            <EditText
+                android:id="@+id/text_minimim_flight_duration_seconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
+                android:autofillHints=""
+                android:ems="10"
+                android:inputType="number"
+                android:paddingTop="0sp"
+                android:text="@string/default_minimum_flight_duration_seconds" />
+        </TableRow>
+
+        <TableRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_span="2"
+                android:background="?android:attr/listDivider" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_span="2"
+                android:text="@string/headline_pilot_settings"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/label_glider_category" />
+
+            <Spinner
+                android:id="@+id/spinner_glider_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/label_start_type" />
+
+            <Spinner
+                android:id="@+id/spinner_start_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView android:text="@string/label_glider_manufacturer" />
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteTextView_glider_manufacturer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_glider_manufacturer"
+                android:text="" />
+
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/label_glider_model" />
+
+            <AutoCompleteTextView
+                android:id="@+id/text_glider_model"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_glider_model"
+                android:text="" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/label_glider_size" />
+
+            <AutoCompleteTextView
+                android:id="@+id/text_glider_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_glider_size"
+                android:text="" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/label_glider_certification" />
+
+            <Spinner
+                android:id="@+id/spinner_glider_certification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_span="2"
+                android:background="?android:attr/listDivider" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_span="2"
+                android:text="@string/headline_dhv_xc"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/label_username" />
+
+            <EditText
+                android:id="@+id/edit_text_username"
+                android:autofillHints="username"
+                android:hint="@string/hint_username_john_doe"
+                android:inputType="text" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/label_password" />
+
+            <EditText
+                android:id="@+id/edit_text_password"
+                android:autofillHints="password"
+                android:hint="@string/hint_password"
+                android:inputType="textPassword" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:labelFor="@+id/edit_text_leonardo_server"
+                android:text="@string/label_dhv_xc_flight_submit_url" />
+
+            <EditText
+                android:id="@+id/edit_text_leonardo_server"
+                android:autofillHints=""
+                android:inputType="textUri"
+                android:maxWidth="0dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_span="2"
+                android:background="?android:attr/listDivider" />
+        </TableRow>
+
+
+    </TableLayout>
+</ScrollView>

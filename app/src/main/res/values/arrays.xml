@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array name="glider_category">
+        <item>Paraglider</item>
+        <item>Flex wing FAI1</item>
+        <item>Rigid wing FAI5</item>
+        <item>Glider</item>
+        <item>Paramotor</item>
+        <item>Trike</item>
+        <item>Powered Flight</item>
+        <item>HG Mosquito</item>
+    </string-array>
+    <string-array name="glider_category_id">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+        <item>16</item>
+        <item>32</item>
+        <item>64</item>
+        <item>256</item>
+    </string-array>
+    <string-array name="start_type">
+        <item>Foot</item>
+        <item>Winch</item>
+        <item>Microlight tow</item>
+        <item>E-motor</item>
+    </string-array>
+    <string-array name="start_type_id">
+        <item>1</item>
+        <item>2</item>
+        <item>4 tow</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="glider_manufacturer">
+        <item>Advance</item>
+        <item>Airwave</item>
+        <item>Gin</item>
+        <item>Icaro Paragliders</item>
+        <item>Nova</item>
+        <item>Skywalk</item>
+        <item>Swing</item>
+        <item>UP</item>
+        <item>SOL</item>
+        <item>Gradient</item>
+        <item>FreeX</item>
+        <item>ProDesign</item>
+        <item>MacPara</item>
+        <item>UTurn</item>
+        <item>Apco</item>
+        <item>Wings Of Change</item>
+        <item>Windtech</item>
+        <item>Sky Paragliders</item>
+        <item>Ozone</item>
+        <item>Aerodyne</item>
+        <item>Aircross</item>
+        <item>Paratech</item>
+        <item>Dudek</item>
+        <item>Firebird</item>
+        <item>FlightDesign</item>
+        <item>Niviuk</item>
+        <item>Independence</item>
+        <item>Axis</item>
+        <item>Aeros</item>
+        <item>Edel</item>
+        <item>ITV</item>
+        <item>Nervunes</item>
+        <item>Pegas</item>
+        <item>Perche</item>
+        <item>Trekking</item>
+        <item>XiX</item>
+        <item>Paradelta</item>
+        <item>WillsWing</item>
+        <item>Moyes</item>
+        <item>A.I.R.</item>
+        <item>Airborne</item>
+        <item>Bautek</item>
+        <item>Seedwings</item>
+        <item>Finsterwalder</item>
+        <item>Team5</item>
+        <item>Thalhofer</item>
+        <item>Airea</item>
+        <item>La Mouette</item>
+        <item>Impuls</item>
+        <item>Team Impact</item>
+        <item>Guggenmos</item>
+        <item>Flying Planet</item>
+        <item>Enterprise Wings</item>
+        <item>CaliptAir</item>
+        <item>Tecma</item>
+        <item>Icaro 2000</item>
+        <item>Skyline</item>
+        <item>Skyward</item>
+        <item>Aeriane</item>
+        <item>Escape</item>
+        <item>Archaeopteryx</item>
+        <item>AirDesign</item>
+        <item>Synairgie</item>
+        <item>Vega</item>
+        <item>Triple Seven</item>
+        <item>Skyman</item>
+        <item>BGD</item>
+        <item>Ikarus</item>
+        <item>Little Cloud</item>
+        <item>JoJo Wings</item>
+        <item>Sky Country</item>
+        <item>Ynovar</item>
+        <item>Archaeopteryx</item>
+        <item>Air Design</item>
+        <item>Paramania</item>
+        <item>Triple Seven</item>
+    </string-array>
+    <string-array name="glider_certification">
+        <item />
+        <item>LTF 1</item>
+        <item tools:ignore="TypographyFractions">LTF 1/2</item>
+        <item>LTF 2</item>
+        <item>LTF 2/3</item>
+        <item>LTF 3</item>
+        <item>EN A</item>
+        <item>EN B</item>
+        <item>EN C</item>
+        <item>EN D</item>
+    </string-array>
+    <string-array name="glider_certification_id">
+        <item />
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+        <item>16</item>
+        <item>32</item>
+        <item>64</item>
+        <item>128</item>
+        <item>256</item>
+    </string-array>
+</resources>
