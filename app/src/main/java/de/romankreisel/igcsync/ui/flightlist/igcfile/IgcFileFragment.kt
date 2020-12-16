@@ -15,6 +15,8 @@ class IgcFileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        
+
         return inflater.inflate(R.layout.igc_file_fragment, container, false)
     }
 

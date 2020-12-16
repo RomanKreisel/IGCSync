@@ -17,7 +17,7 @@ interface IgcFileDao {
     @Query("SELECT * FROM igcfile WHERE sha256_checksum=:checksum")
     suspend fun findBySha256Checksum(checksum: String): List<IgcFile>
 
-    @Query("SELECT * FROM igcfile WHERE uploaded_dhv_xc = 0 order by start_date desc")
+    @Query("SELECT * FROM igcfile WHERE skip_always = 0 order by start_date desc")
     suspend fun findFilesWithMissingUpload(): List<IgcFile>
 
     @Insert

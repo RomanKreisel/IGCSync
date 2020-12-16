@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat
 
 class IgcFilesAdapter(
     private val igcFiles: List<IgcFile>,
+    val itemClickListener: OnItemClickListener
 ) :
     RecyclerView.Adapter<IgcFilesAdapter.ViewHolder>() {
 
@@ -30,10 +31,13 @@ class IgcFilesAdapter(
         val startDate = igcFile.startDate
         if (startDate != null) {
             holder.filenameTextView.text =
-                SimpleDateFormat.getDateTimeInstance().format(startDate)
+                SimpleDateFormat.getDateTimeInstance()
+                    .format(startDate)
         } else {
-            holder.filenameTextView.text = igcFiles[position].filename
+            holder.filenameTextView.text =
+                igcFile.filename
         }
+        holder.bind(igcFile, itemClickListener)
     }
 
 
@@ -42,5 +46,15 @@ class IgcFilesAdapter(
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         lateinit var filenameTextView: TextView
+
+        fun bind(igcFile: IgcFile, clickListener: OnItemClickListener) {
+            itemView.setOnClickListener {
+                clickListener.onItemClicked(igcFile)
+            }
+        }
     }
+}
+
+interface OnItemClickListener {
+    fun onItemClicked(igcFile: IgcFile)
 }

@@ -13,13 +13,25 @@
         <action
             android:id="@+id/action_FirstFragment_to_SettingsFragment"
             app:destination="@id/SettingsFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_FlightFragment"
+            app:destination="@+id/FlightFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/FlightFragment"
+        android:name="de.romankreisel.igcsync.ui.flight.FlightFragment"
+        android:label="Flight"
+        tools:layout="@layout/fragment_flight">
+        <argument
+            android:name="flight"
+            app:argType="de.romankreisel.igcsync.data.model.IgcFile" />
+
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
         android:name="de.romankreisel.igcsync.SecondFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
-
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />

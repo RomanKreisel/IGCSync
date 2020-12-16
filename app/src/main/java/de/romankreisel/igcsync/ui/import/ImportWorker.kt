@@ -9,12 +9,13 @@ import androidx.work.Data.Builder
 import androidx.work.WorkerParameters
 import de.romankreisel.igcsync.data.IgcSyncDatabase
 import de.romankreisel.igcsync.data.igc.IgcException
-import de.romankreisel.igcsync.data.igc.IgcParser
 import de.romankreisel.igcsync.data.model.IgcFile
+import de.romankreisel.igcsync.igc.IgcData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -30,6 +31,13 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
             if (dataUrlString == null || dataUrlString.isEmpty()) {
                 return Result.failure()
             }
+
+            val minimumFlightDurationSeconds =
+                workerParams.inputData.getInt("minimumFlightDurationSeconds", -1)
+            if (minimumFlightDurationSeconds < 0) {
+                return Result.failure()
+            }
+
             val igcDirectoryDocumentFile =
                 DocumentFile.fromTreeUri(this.applicationContext, Uri.parse(dataUrlString))
 
@@ -43,7 +51,7 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
             }
 
             val files = this.getRealFilesForDirectory(igcDirectoryDocumentFile, dataBuilder)
-            this.importIgcNewFiles(files, dataBuilder)
+            this.importIgcNewFiles(files, minimumFlightDurationSeconds, dataBuilder)
             return Result.success(dataBuilder.build())
         } catch (exception: Exception) {
             Log.e(this.javaClass.canonicalName, "An exception occurred", exception)
@@ -51,7 +59,11 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
         }
     }
 
-    private suspend fun importIgcNewFiles(files: List<DocumentFile>, dataBuilder: Builder) {
+    private suspend fun importIgcNewFiles(
+        files: List<DocumentFile>,
+        minimumFlightDurationSeconds: Int,
+        dataBuilder: Builder
+    ) {
         var newFiles = 0
         val igcFiles = ArrayList<IgcFile>()
         val igcFileDao = IgcSyncDatabase.getDatabase(this.applicationContext).igcFileDao()
@@ -90,13 +102,18 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
                     igcFiles.add(igcFile)
                 } else {
                     //We never saw this content before, so we should remember the content for upload
-                    ++newFiles
                     igcFile.content = igcContent
                     try {
-                        val igcData = IgcParser.parse(igcContent)
+                        val igcData = IgcData(igcContent)
                         igcFile.startDate = igcData.startTime
+                        igcFile.duration = igcData.duration
                     } catch (e: IgcException) {
                         Log.e("", "Error parsing IGC file", e)
+                    }
+                    if (igcFile.duration < Duration.ofSeconds(minimumFlightDurationSeconds.toLong())) {
+                        igcFile.skipAlways = true //flight was too short
+                    } else {
+                        ++newFiles
                     }
                     igcFiles.add(igcFile)
                 }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.*
 import de.romankreisel.igcsync.data.dao.IgcFileDao
 import de.romankreisel.igcsync.data.model.IgcFile
+import java.time.Duration
 import java.util.*
 
 @Database(entities = arrayOf(IgcFile::class), version = 1, exportSchema = false)
@@ -44,6 +45,16 @@ abstract class IgcSyncDatabase : RoomDatabase() {
         @TypeConverter
         fun dateToTimestamp(date: Date?): Long? {
             return date?.time
+        }
+
+        @TypeConverter
+        fun fromDurationMilliseconds(value: Long?): Duration? {
+            return value?.let { Duration.ofMillis(it) }
+        }
+
+        @TypeConverter
+        fun dateToTimestamp(duration: Duration?): Long? {
+            return duration?.toMillis()
         }
     }
 
