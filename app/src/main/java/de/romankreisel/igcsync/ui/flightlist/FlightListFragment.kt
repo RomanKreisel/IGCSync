@@ -104,7 +104,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
         if (igcDirectoryUrlString == null || igcDirectoryUrlString.isBlank()) {
             Toast.makeText(
                 this.requireContext(),
-                getString(R.string.warning_error_accessing_data_directory),
+                getString(R.string.setup_data_directory_first),
                 Toast.LENGTH_LONG
             ).show()
             requireActivity().startActivityForResult(
