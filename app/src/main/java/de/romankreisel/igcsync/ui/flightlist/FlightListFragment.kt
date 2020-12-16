@@ -1,4 +1,4 @@
-package de.romankreisel.igcsync
+package de.romankreisel.igcsync.ui.flightlist
 
 import android.content.Context
 import android.content.Intent
@@ -9,44 +9,84 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.Button
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import de.romankreisel.igcsync.MainActivity
+import de.romankreisel.igcsync.R
+import de.romankreisel.igcsync.data.IgcSyncDatabase
+import de.romankreisel.igcsync.data.dao.IgcFileDao
 import de.romankreisel.igcsync.ui.import.ImportWorker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class FlightListFragment : Fragment(), Observer<WorkInfo> {
 
-    private lateinit var floatingImportButton: FloatingActionButton
+    private lateinit var flightListViewModel: FlightListViewModel
+    private lateinit var igcFileDao: IgcFileDao
     private lateinit var preferences: SharedPreferences
+    private lateinit var floatingImportButton: FloatingActionButton
+    private lateinit var recyclerViewIgcFiles: RecyclerView
+
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        this.preferences = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
+        this.igcFileDao = IgcSyncDatabase.getDatabase(this.requireActivity().applicationContext).igcFileDao()
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_flight_list, container, false)
+        val root = inflater.inflate(R.layout.fragment_flight_list, container, false)
+        this.recyclerViewIgcFiles =
+                root.findViewById<RecyclerView>(R.id.recycler_view_igc_files)
+        recyclerViewIgcFiles.apply {
+            layoutManager = LinearLayoutManager(activity)
+            adapter = IgcFilesAdapter(
+                    Collections.unmodifiableList(Collections.emptyList())
+            )
+        }
+        this.flightListViewModel = ViewModelProvider(this).get(FlightListViewModel::class.java)
+        this.flightListViewModel.igcFiles.observe(viewLifecycleOwner, {
+            val myValue = flightListViewModel.igcFiles.value
+            if (myValue != null) {
+                recyclerViewIgcFiles.adapter = IgcFilesAdapter(myValue)
+            } else {
+                recyclerViewIgcFiles.adapter =
+                        IgcFilesAdapter(Collections.unmodifiableList(Collections.emptyList()))
+            }
+        })
+
+        this.UpdateView()
+        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        this.preferences = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
-
-        view.findViewById<Button>(R.id.button_first).setOnClickListener {
-            // findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
-
         this.floatingImportButton = view.findViewById<FloatingActionButton>(R.id.fab)
         floatingImportButton.setOnClickListener {
             this.importFlights()
+        }
+    }
+
+    private fun UpdateView() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val myIgcFiles = igcFileDao.findFilesWithMissingUpload()
+            requireActivity().runOnUiThread {
+                flightListViewModel.igcFiles.value = Collections.unmodifiableList(myIgcFiles)
+            }
         }
     }
 
