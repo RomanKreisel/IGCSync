@@ -33,6 +33,7 @@ import de.romankreisel.igcsync.ui.import.ImportWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.Duration
 import java.util.*
 
 /**
@@ -80,7 +81,10 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
         })
 
         this.progressBar = root.findViewById<ProgressBar>(R.id.progress_bar)
+        this.progressBar.visibility = View.GONE
         this.progressText = root.findViewById<TextView>(R.id.progress_text)
+        this.progressText.visibility = View.GONE
+
 
 
         this.UpdateView()
@@ -97,7 +101,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
 
     private fun UpdateView() {
         CoroutineScope(Dispatchers.IO).launch {
-            val myIgcFiles = igcFileDao.findFilesWithMissingUpload()
+            val myIgcFiles = igcFileDao.getAll(Duration.ofSeconds(this@FlightListFragment.preferences.getInt(getString(R.string.preference_minimum_flight_duration_seconds), 60).toLong()))
             requireActivity().runOnUiThread {
                 flightListViewModel.igcFiles.value = Collections.unmodifiableList(myIgcFiles)
             }

@@ -10,36 +10,38 @@ import java.util.*
 
 @Entity
 data class IgcFile(
-    @PrimaryKey var url: String,
-    @ColumnInfo(name = "filename") var filename: String,
-    @ColumnInfo(name = "sha256_checksum", index = true) var sha256Checksum: String,
-    @ColumnInfo var content: String? = null,
-    @ColumnInfo(name = "skip_always") var skipAlways: Boolean = false,
-    @ColumnInfo(name = "uploaded_dhv_xc") var uploadedDhvXc: Boolean = false,
-    @ColumnInfo(name = "start_date") var startDate: Date? = null,
-    @ColumnInfo(name = "duration") var duration: Duration = Duration.ZERO,
+        @PrimaryKey var url: String,
+        @ColumnInfo(name = "filename") var filename: String,
+        @ColumnInfo(name = "sha256_checksum", index = true) var sha256Checksum: String,
+        @ColumnInfo(name = "import_date") var import_date: Date,
+        @ColumnInfo var content: String? = null,
+        @ColumnInfo(name = "is_duplicate") var isDuplicate: Boolean = false,
+        @ColumnInfo(name = "start_date") var startDate: Date? = null,
+        @ColumnInfo(name = "duration") var duration: Duration = Duration.ZERO,
+        @ColumnInfo(name = "dhvxc_flight_url") var dhvXcFlightUrl: String? = null,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readString(),
-        parcel.readByte() != 0.toByte(),
-        parcel.readByte() != 0.toByte(),
-        dateFromLong(parcel.readLong()),
-        Duration.ofMillis(parcel.readLong())
-    ) {
+            parcel.readString() ?: "",
+            parcel.readString() ?: "",
+            parcel.readString() ?: "",
+            dateFromLong(parcel.readLong()),
+            parcel.readString(),
+            parcel.readByte() != 0.toByte(),
+            dateFromLong(parcel.readLong()),
+            Duration.ofMillis(parcel.readLong()),
+            parcel.readString()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(url)
         parcel.writeString(filename)
         parcel.writeString(sha256Checksum)
+        parcel.writeLong(this.import_date.time)
         parcel.writeString(content)
-        parcel.writeByte(if (skipAlways) 1 else 0)
-        parcel.writeByte(if (uploadedDhvXc) 1 else 0)
+        parcel.writeByte(if (isDuplicate) 1 else 0)
         parcel.writeLong(this.startDate?.time ?: 0)
         parcel.writeLong(this.duration.toMillis())
+        parcel.writeString(dhvXcFlightUrl)
     }
 
     override fun describeContents(): Int {
@@ -61,4 +63,5 @@ data class IgcFile(
             return date
         }
     }
+
 }
