@@ -1,9 +1,6 @@
 package de.romankreisel.igcsync.data.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import de.romankreisel.igcsync.data.model.IgcFile
 import java.time.Duration
 
@@ -23,6 +20,9 @@ interface IgcFileDao {
 
     @Delete
     suspend fun delete(file: IgcFile)
+
+    @Update
+    fun update(flight: IgcFile)
 
 
 }

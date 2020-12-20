@@ -17,11 +17,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.squareup.okhttp.*
 import de.romankreisel.igcsync.R
+import de.romankreisel.igcsync.data.IgcSyncDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.URLEncoder
+import java.util.regex.Pattern
 
 class FlightFragment : Fragment() {
     private var dhvButton: ImageButton? = null
@@ -112,6 +114,23 @@ class FlightFragment : Fragment() {
                         val alertBuilder = AlertDialog.Builder(this@FlightFragment.requireContext())
                         val correctedText =
                             responseBody.replace("href='/", "href='https://www.dhv-xc.de/")
+
+                        val matcher =
+                            Pattern.compile(".*(https://www.dhv-xc.de(/xc/modules){0,1}(/leonardo){0,1}/index\\.php\\?op=show_flight&flightID=[0-9]+).*")
+                                .matcher(correctedText)
+                        if (matcher.find()) {
+                            val group = matcher.group(1)
+                            val text = group?.toString()
+                            if (!text.isNullOrBlank()) {
+                                args.flight.dhvXcFlightUrl = text
+                                val igcFileDao =
+                                    IgcSyncDatabase.getDatabase(this@FlightFragment.requireContext())
+                                        .igcFileDao()
+                                igcFileDao.update(args.flight)
+                            }
+                        }
+
+
                         this@FlightFragment.requireActivity().runOnUiThread {
                             this@FlightFragment.dhvButton?.animation?.cancel()
                             alertBuilder
