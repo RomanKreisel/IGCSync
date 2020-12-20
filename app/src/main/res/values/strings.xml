@@ -26,14 +26,14 @@
     <string name="label_data_directory_scan_in_progress">Scanning data directory</string>
     <string name="label_data_directory_ready_for_scan">Ready for import</string>
     <string name="label_data_directory_not_ready_for_scan">Data directory cannot be accessed. Invalid settings or Vario removed from USB?</string>
-    <string name="label_perform_scan">Import new IGC files</string>
+    <string name="label_perform_scan">Import new flights</string>
     <string name="warning_error_accessing_data_directory">An error occurred accessing the data directory, please check the settings.</string>
-    <string name="label_scanning">Scanning for new files…</string>
-    <string name="label_scan_finished_with_files_found">Scan finished,  %1$d new flights found</string>
-    <string name="label_scan_finished_with_file_found">Scan finished, one new flight found</string>
-    <string name="label_scan_finished_with_no_files_found">Scan finished, no new flights found</string>
-    <string name="label_scan_failed">The scan failed on file %1$s</string>
-    <string name="label_scan_cancelled">Scan cancelled</string>
+    <string name="label_scanning">Scanning for new flights…</string>
+    <string name="label_scan_finished_with_files_found">Search finished,  %1$d new flights found</string>
+    <string name="label_scan_finished_with_file_found">Search finished, one new flight found</string>
+    <string name="label_scan_finished_with_no_files_found">Search finished, no new flights found</string>
+    <string name="label_scan_failed">The search failed on file %1$s</string>
+    <string name="label_scan_cancelled">Search cancelled</string>
     <string name="label_scanning_progress">Importing flights (%1$d%%)</string>
     <string name="button_ignore">Ignore</string>
     <string name="button_upload_single">Upload</string>
@@ -71,6 +71,5 @@
     <string name="button_description_import_new_flights">Import new flights</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="toast_scan_for_new_flights">Scanning for new files…</string>
-    <string name="setup_data_directory_first">You need to select a data directory first</string>
+    <string name="toast_scan_for_new_flights">Searching for new flights…</string>
 </resources>

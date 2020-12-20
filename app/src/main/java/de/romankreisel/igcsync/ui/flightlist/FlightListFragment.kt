@@ -5,10 +5,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
@@ -37,6 +40,8 @@ import java.util.*
  */
 class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
 
+    private lateinit var progressBar: ProgressBar
+    private lateinit var progressText: TextView
     private lateinit var flightListViewModel: FlightListViewModel
     private lateinit var igcFileDao: IgcFileDao
     private lateinit var preferences: SharedPreferences
@@ -45,21 +50,21 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         this.preferences = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
         this.igcFileDao =
-            IgcSyncDatabase.getDatabase(this.requireActivity().applicationContext).igcFileDao()
+                IgcSyncDatabase.getDatabase(this.requireActivity().applicationContext).igcFileDao()
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_flight_list, container, false)
         this.recyclerViewIgcFiles =
-            root.findViewById<RecyclerView>(R.id.recycler_view_igc_files)
+                root.findViewById<RecyclerView>(R.id.recycler_view_igc_files)
         recyclerViewIgcFiles.apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = IgcFilesAdapter(
-                Collections.unmodifiableList(Collections.emptyList()),
-                this@FlightListFragment
+                    Collections.unmodifiableList(Collections.emptyList()),
+                    this@FlightListFragment
             )
         }
 
@@ -70,9 +75,12 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
                 recyclerViewIgcFiles.adapter = IgcFilesAdapter(myValue, this)
             } else {
                 recyclerViewIgcFiles.adapter =
-                    IgcFilesAdapter(Collections.unmodifiableList(Collections.emptyList()), this)
+                        IgcFilesAdapter(Collections.unmodifiableList(Collections.emptyList()), this)
             }
         })
+
+        this.progressBar = root.findViewById<ProgressBar>(R.id.progress_bar)
+        this.progressText = root.findViewById<TextView>(R.id.progress_text)
 
 
         this.UpdateView()
@@ -98,56 +106,46 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
 
     private fun importFlights() {
         val igcDirectoryUrlString = this.preferences.getString(
-            getString(R.string.preference_igc_directory_url),
-            null
+                getString(R.string.preference_igc_directory_url),
+                null
         )
         if (igcDirectoryUrlString == null || igcDirectoryUrlString.isBlank()) {
-            Toast.makeText(
-                this.requireContext(),
-                getString(R.string.setup_data_directory_first),
-                Toast.LENGTH_LONG
-            ).show()
             requireActivity().startActivityForResult(
-                Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
-                MainActivity.REQUEST_CODE_IGC_DATA_DIRECTORY
+                    Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
+                    MainActivity.REQUEST_CODE_IGC_DATA_DIRECTORY
             )
             return
         }
 
         val igcDirectoryDocumentFile =
-            DocumentFile.fromTreeUri(this.requireContext(), Uri.parse(igcDirectoryUrlString))
+                DocumentFile.fromTreeUri(this.requireContext(), Uri.parse(igcDirectoryUrlString))
 
         if (igcDirectoryDocumentFile == null || !igcDirectoryDocumentFile.exists() || !igcDirectoryDocumentFile.isDirectory || !igcDirectoryDocumentFile.canRead()) {
             Toast.makeText(
-                this.requireContext(),
-                getString(R.string.warning_error_accessing_data_directory),
-                Toast.LENGTH_LONG
+                    this.requireContext(),
+                    getString(R.string.warning_error_accessing_data_directory),
+                    Toast.LENGTH_LONG
             ).show()
             return
         }
         val scanWorkRequest = OneTimeWorkRequest.Builder(ImportWorker::class.java).setInputData(
-            androidx.work.Data.Builder()
-                .putString("dataUrl", igcDirectoryUrlString)
-                .putInt(
-                    "minimumFlightDurationSeconds",
-                    this.preferences.getInt(
-                        getString(R.string.preference_minimum_flight_duration_seconds),
-                        60
-                    )
-                )
-                .build()
+                androidx.work.Data.Builder()
+                        .putString("dataUrl", igcDirectoryUrlString)
+                        .putInt(
+                                "minimumFlightDurationSeconds",
+                                this.preferences.getInt(
+                                        getString(R.string.preference_minimum_flight_duration_seconds),
+                                        60
+                                )
+                        )
+                        .build()
         ).build()
         val workManager = WorkManager.getInstance(this.requireContext())
         this.floatingImportButton.isEnabled = false
-        Toast.makeText(
-            this.requireContext(),
-            getString(R.string.toast_scan_for_new_flights),
-            Toast.LENGTH_SHORT
-        ).show()
-
-        val animation = AnimationUtils.loadAnimation(this.requireContext(), R.anim.pulse)
-        this.floatingImportButton.startAnimation(animation)
-
+        this.progressBar.visibility = View.VISIBLE
+        this.progressText.text = getString(R.string.toast_scan_for_new_flights)
+        this.progressBar.isIndeterminate = true
+        this.progressText.visibility = View.VISIBLE
         workManager.enqueue(scanWorkRequest)
 
         workManager.getWorkInfoByIdLiveData(scanWorkRequest.id).observeForever(this)
@@ -156,61 +154,50 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
     override fun onChanged(workInfo: WorkInfo?) {
         when (workInfo?.state) {
             WorkInfo.State.SUCCEEDED -> {
-                this.floatingImportButton.isEnabled = true
-                this.floatingImportButton.animation.cancel()
                 val fileCount = workInfo.outputData.getInt("fileCount", 0)
                 val text: String
                 if (fileCount > 1) {
                     text = getString(
-                        R.string.label_scan_finished_with_files_found,
-                        workInfo.outputData.getInt("fileCount", 0)
+                            R.string.label_scan_finished_with_files_found,
+                            workInfo.outputData.getInt("fileCount", 0)
                     )
                 } else if (fileCount > 0) {
                     text = getString(R.string.label_scan_finished_with_file_found)
                 } else {
                     text = getString(R.string.label_scan_finished_with_no_files_found)
                 }
-                Toast.makeText(this.requireContext(), text, Toast.LENGTH_LONG).show()
+                this.progressBar.progress = 100
+                this.progressBar.isIndeterminate = false
+                this.progressText.text = text
                 this.UpdateView()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    this.floatingImportButton.isEnabled = true
+                    this.progressBar.visibility = View.GONE
+                    this.progressText.visibility = View.GONE
+                }, 10000)
             }
             WorkInfo.State.FAILED -> {
-                Toast.makeText(this.requireContext(), "Failed", Toast.LENGTH_LONG).show()
-                //TODO: better error message
-                /*this.importViewModel.text.apply {
-                    value = getString(
-                        R.string.label_scan_failed,
-                        workInfo.outputData.getString("failedFile")
-                    )
-                }
-                this.importViewModel.scanButtonAvailable.apply { value = true }
-                 */
+                Toast.makeText(this.requireContext(), getString(R.string.label_scan_failed), Toast.LENGTH_LONG).show()
+                this.floatingImportButton.isEnabled = true
+                this.progressBar.visibility = View.GONE
+                this.progressText.visibility = View.GONE
             }
             WorkInfo.State.CANCELLED -> {
-                Toast.makeText(this.requireContext(), "Cancelled", Toast.LENGTH_LONG).show()
-                //TODO: better error message
-                /*this.importViewModel.text.apply {
-                    value = getString(R.string.label_scan_cancelled)
-                }
-                this.importViewModel.scanButtonAvailable.apply { value = true }
-
-                 */
+                Toast.makeText(this.requireContext(), getString(R.string.label_scan_cancelled), Toast.LENGTH_LONG).show()
+                this.floatingImportButton.isEnabled = true
+                this.progressBar.visibility = View.GONE
+                this.progressText.visibility = View.GONE
             }
             WorkInfo.State.RUNNING -> {
-                /*
                 val filesProgressed = workInfo.progress.getInt("filesProgressed", 0)
                 val filesTotal = workInfo.progress.getInt("filesTotal", 0)
                 if (filesTotal > 0) {
-                    this.floatingImportButton.animate()
-                }*/
-                /*    this.importViewModel.text.apply {
-                        value = getString(
+                    this.progressText.text = getString(
                             R.string.label_scanning_progress,
-                            (filesProgressed * 100 / filesTotal)
-                        )
-                    }
+                            (filesProgressed * 100 / filesTotal))
+                    this.progressBar.isIndeterminate = false
+                    this.progressBar.progress = (filesProgressed * 100 / filesTotal)
                 }
-
-                 */
             }
             else -> {
             }

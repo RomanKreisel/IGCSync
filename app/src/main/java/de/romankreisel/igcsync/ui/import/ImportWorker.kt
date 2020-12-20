@@ -20,10 +20,10 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class ImportWorker(context: Context, private var workerParams: WorkerParameters) :
-    CoroutineWorker(
-        context,
-        workerParams
-    ) {
+        CoroutineWorker(
+                context,
+                workerParams
+        ) {
     override suspend fun doWork(): Result {
         val dataBuilder = Builder()
         try {
@@ -33,24 +33,26 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
             }
 
             val minimumFlightDurationSeconds =
-                workerParams.inputData.getInt("minimumFlightDurationSeconds", -1)
+                    workerParams.inputData.getInt("minimumFlightDurationSeconds", -1)
             if (minimumFlightDurationSeconds < 0) {
                 return Result.failure()
             }
 
             val igcDirectoryDocumentFile =
-                DocumentFile.fromTreeUri(this.applicationContext, Uri.parse(dataUrlString))
+                    DocumentFile.fromTreeUri(this.applicationContext, Uri.parse(dataUrlString))
 
             if (igcDirectoryDocumentFile == null || !igcDirectoryDocumentFile.exists() || !igcDirectoryDocumentFile.isDirectory || !igcDirectoryDocumentFile.canRead()) {
                 return Result.failure(
-                    dataBuilder.putString(
-                        "failedFile",
-                        igcDirectoryDocumentFile?.uri.toString()
-                    ).build()
+                        dataBuilder.putString(
+                                "failedFile",
+                                igcDirectoryDocumentFile?.uri.toString()
+                        ).build()
                 )
             }
 
-            val files = this.getRealFilesForDirectory(igcDirectoryDocumentFile, dataBuilder)
+            var files = this.getRealFilesForDirectory(igcDirectoryDocumentFile, dataBuilder)
+            val igcFileDao = IgcSyncDatabase.getDatabase(this.applicationContext).igcFileDao()
+            files = files.filter { igcFileDao.findByUrl(it.uri.toString()) == null }
             this.importIgcNewFiles(files, minimumFlightDurationSeconds, dataBuilder)
             return Result.success(dataBuilder.build())
         } catch (exception: Exception) {
@@ -60,22 +62,20 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
     }
 
     private suspend fun importIgcNewFiles(
-        files: List<DocumentFile>,
-        minimumFlightDurationSeconds: Int,
-        dataBuilder: Builder
+            files: List<DocumentFile>,
+            minimumFlightDurationSeconds: Int,
+            dataBuilder: Builder
     ) {
         var newFiles = 0
         val igcFiles = ArrayList<IgcFile>()
         val igcFileDao = IgcSyncDatabase.getDatabase(this.applicationContext).igcFileDao()
-
-        var absoluteFileCount = 0
+        var progressedFilesCount = 0
         for (file in files) {
             this.setProgressAsync(
-                dataBuilder.putInt("filesProgressed", ++absoluteFileCount)
-                    .putInt("filesTotal", files.count()).build()
+                    dataBuilder.putInt("filesProgressed", ++progressedFilesCount)
+                            .putInt("filesTotal", files.count()).build()
             )
             try {
-                if (igcFileDao.findByUrl(file.uri.toString()) != null) continue //we handled this file before
                 val lowerFilename = file.name?.toLowerCase(Locale.getDefault())
                 if (lowerFilename == null || !lowerFilename.endsWith(".igc")) continue //ignore everything but IGCs
                 if (file.length() > 10 * 1024 * 1024) continue //ignore files > 10MByte - IGCs are supposed to be much smaller
@@ -85,12 +85,12 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
 
                 val igcContent = withContext<String?>(Dispatchers.IO) {
                     applicationContext.contentResolver.openInputStream(file.uri)?.bufferedReader()
-                        ?.readText()
+                            ?.readText()
                 }
 
                 if (igcContent == null) continue //we also skip files, if we didn't get an inputstream for them
                 val checksum = BigInteger(
-                    1, MessageDigest.getInstance("SHA-256").digest(igcContent.toByteArray())
+                        1, MessageDigest.getInstance("SHA-256").digest(igcContent.toByteArray())
                 ).toString(16)
 
                 val igcFile = IgcFile(file.uri.toString(), file.name!!, checksum)
@@ -128,8 +128,8 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
 
 
     private fun getRealFilesForDirectory(
-        directory: DocumentFile,
-        dataBuilder: Builder
+            directory: DocumentFile,
+            dataBuilder: Builder
     ): List<DocumentFile> {
         val list = ArrayList<DocumentFile>()
         directory.listFiles().forEach {
