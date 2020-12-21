@@ -76,4 +76,7 @@
     <string name="label_flight_start_time">Start:</string>
     <string name="label_flight_duration">Duration:</string>
     <string name="content_description_flight_on_dhvxc">Flight available on DHV-XC</string>
+    <string name="button_upload_flight">Upload</string>
+    <string name="button_view_flight">View</string>
+    <string name="button_dhv_xc_content_description">DHV XC</string>
 </resources>

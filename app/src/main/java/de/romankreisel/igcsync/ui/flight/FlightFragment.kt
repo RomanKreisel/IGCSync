@@ -2,20 +2,23 @@ package de.romankreisel.igcsync.ui.flight
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -35,7 +38,10 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
+
 class FlightFragment : Fragment() {
+    private lateinit var button_upload: Button
+    private lateinit var button_view_in_dhvxc: Button
     private var mapFragment: SupportMapFragment? = null
     private lateinit var igcData: IgcData
 
@@ -54,19 +60,13 @@ class FlightFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
+        googleMap.uiSettings.isZoomControlsEnabled = true
+
         googleMap.uiSettings.isCompassEnabled = true
         val firstBRecord = this.igcData.bRecords.first()
         val start = LatLng(firstBRecord.latitude, firstBRecord.longitude)
         googleMap.addMarker(MarkerOptions().position(start).title("Start"))
+        googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
 
         val lastBRecord = this.igcData.bRecords.last()
         val landing = LatLng(lastBRecord.latitude, lastBRecord.longitude)
@@ -84,7 +84,7 @@ class FlightFragment : Fragment() {
         val line = PolylineOptions()
         line.addAll(positions)
         val polyLine = googleMap.addPolyline(line)
-        polyLine.color = R.color.flighttrack_on_map
+        polyLine.color = R.color.black
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(LatLngBounds(lowerBounds, higherBounds), 100))
         this.mapFragment?.onResume()
@@ -111,12 +111,27 @@ class FlightFragment : Fragment() {
         view?.findViewById<TextView>(R.id.flight_name)?.text = args.flight.filename
         this.dhvButton = view?.findViewById<ImageButton>(R.id.button_upload_dhv_xc)
         this.dhvButton?.setOnClickListener {
-            val animation = AnimationUtils.loadAnimation(this.requireContext(), R.anim.pulse)
-            this.dhvButton?.startAnimation(animation)
-            this.upload()
+            if (this.button_upload.visibility == View.GONE) this.button_upload.visibility = View.VISIBLE else this.button_upload.visibility = View.GONE
+            if (this.button_view_in_dhvxc.visibility == View.GONE && !args.flight.dhvXcFlightUrl.isNullOrBlank()) this.button_view_in_dhvxc.visibility = View.VISIBLE else this.button_view_in_dhvxc.visibility = View.GONE
         }
 
-        this.requireActivity().setTitle(SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(args.flight.startDate))
+        this.button_upload = view?.findViewById<Button>(R.id.button_upload)!!
+        this.button_upload.visibility = View.GONE
+        this.button_upload.setOnClickListener {
+            this.upload()
+            this.button_view_in_dhvxc.visibility = View.GONE
+            this.button_upload.visibility = View.GONE
+        }
+        this.button_view_in_dhvxc = view?.findViewById<Button>(R.id.button_view_in_dhvxc)!!
+        this.button_view_in_dhvxc.visibility = View.GONE
+        this.button_view_in_dhvxc.setOnClickListener {
+            this.button_view_in_dhvxc.visibility = View.GONE
+            this.button_upload.visibility = View.GONE
+            val myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(args.flight.dhvXcFlightUrl))
+            startActivity(myIntent)
+        }
+
+        this.requireActivity().setTitle(SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(args.flight.startDate!!))
 
         this.mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment?
         this.mapFragment?.onCreate(savedInstanceState)
@@ -139,7 +154,7 @@ class FlightFragment : Fragment() {
 
             parameters.put("user", this@FlightFragment.preferences.getString("username", "")!!)
             parameters.put("pass", this@FlightFragment.preferences.getString("password", "")!!)
-            parameters.put("igcfn", args.flight.sha256Checksum)
+            parameters.put("igcfn", args.flight.filename)
             parameters.put("IGCigcIGC", args.flight.content!!)
             parameters.put("klasse", "9")
             parameters.put("startType", "1")
