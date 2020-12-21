@@ -28,15 +28,6 @@
 
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="de.romankreisel.igcsync.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/SettingsFragment"
         android:name="de.romankreisel.igcsync.ui.settings.SettingsFragment"
         android:label="@string/title_settings"

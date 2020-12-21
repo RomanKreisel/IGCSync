@@ -5,6 +5,7 @@ import de.romankreisel.igcsync.data.igc.IgcException
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.util.*
+import java.util.regex.Pattern
 
 class IgcData(igcContent: String) {
     val bRecords: MutableList<BRecord> = ArrayList<BRecord>()
@@ -53,9 +54,14 @@ class BRecord(igcData: IgcData, line: String) {
 
     var recordTime: Date
         private set
+    var latitude: Double
+        private set
+    var longitude: Double
+        private set
 
     init {
-        if (!line.startsWith('B') || line.length < 7) {
+        val matcher = Pattern.compile("^[B](\\d{6})(\\d{2})(\\d{5})([NS])(\\d{3})(\\d{5})([EW]).*$").matcher(line)
+        if (!matcher.find()) {
             throw IgcException("Unexpected B Record line")
         }
 
@@ -64,12 +70,21 @@ class BRecord(igcData: IgcData, line: String) {
             previousDate = igcData.bRecords.last().recordTime
         }
 
-        this.recordTime = SimpleDateFormat("yyyy-MM-dd HHmmss").parse(
-            SimpleDateFormat("yyyy-MM-dd").format(previousDate) + " " + line.substring(
-                1,
-                7
-            )
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        val sdtf = SimpleDateFormat("yyyy-MM-dd HHmmss")
+        sdtf.timeZone = TimeZone.getTimeZone("UTC")
+        this.recordTime = sdtf.parse(
+                sdf.format(previousDate) + " " + matcher.group(1)
         ) ?: Date(0)
+
+        //latitude
+        val latitudeMultiplier = if (matcher.group(4) == "N") 1 else -1
+        this.latitude = latitudeMultiplier * matcher.group(2)!!.toInt() + matcher.group(3)!!.toInt() / 60000.0
+
+        //Longitude
+        val longitudeMultiplier = if (matcher.group(7) == "E") 1 else -1
+        this.longitude = longitudeMultiplier * matcher.group(5)!!.toInt() + matcher.group(6)!!.toInt() / 60000.0
 
 
         if (igcData.bRecords.count() > 0 && igcData.bRecords.last().recordTime.time > this.recordTime.time) { //the flight just outlasted midnight (utc)

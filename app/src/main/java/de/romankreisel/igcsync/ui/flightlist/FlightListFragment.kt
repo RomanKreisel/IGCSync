@@ -54,6 +54,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        this.requireActivity().setTitle(R.string.app_name)
         this.preferences = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
         this.igcFileDao =
                 IgcSyncDatabase.getDatabase(this.requireActivity().applicationContext).igcFileDao()

@@ -15,20 +15,80 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.squareup.okhttp.*
 import de.romankreisel.igcsync.R
 import de.romankreisel.igcsync.data.IgcSyncDatabase
+import de.romankreisel.igcsync.igc.IgcData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.URLEncoder
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 class FlightFragment : Fragment() {
+    private var mapFragment: SupportMapFragment? = null
+    private lateinit var igcData: IgcData
+
+    // private var mapView: MapView? = null
     private var dhvButton: ImageButton? = null
     private lateinit var preferences: SharedPreferences
     val args: FlightFragmentArgs by navArgs()
+
+    private val mapsCallback = OnMapReadyCallback { googleMap ->
+        /**
+         * Manipulates the map once available.
+         * This callback is triggered when the map is ready to be used.
+         * This is where we can add markers or lines, add listeners or move the camera.
+         * In this case, we just add a marker near Sydney, Australia.
+         * If Google Play services is not installed on the device, the user will be prompted to
+         * install it inside the SupportMapFragment. This method will only be triggered once the
+         * user has installed Google Play services and returned to the app.
+         */
+        /**
+         * Manipulates the map once available.
+         * This callback is triggered when the map is ready to be used.
+         * This is where we can add markers or lines, add listeners or move the camera.
+         * In this case, we just add a marker near Sydney, Australia.
+         * If Google Play services is not installed on the device, the user will be prompted to
+         * install it inside the SupportMapFragment. This method will only be triggered once the
+         * user has installed Google Play services and returned to the app.
+         */
+        googleMap.uiSettings.isCompassEnabled = true
+        val firstBRecord = this.igcData.bRecords.first()
+        val start = LatLng(firstBRecord.latitude, firstBRecord.longitude)
+        googleMap.addMarker(MarkerOptions().position(start).title("Start"))
+
+        val lastBRecord = this.igcData.bRecords.last()
+        val landing = LatLng(lastBRecord.latitude, lastBRecord.longitude)
+        googleMap.addMarker(MarkerOptions().position(landing).title("Landing"))
+
+        var lowerBounds = start
+        var higherBounds = start
+
+        val positions = ArrayList<LatLng>()
+        this.igcData.bRecords.forEach { record ->
+            positions.add(LatLng(record.latitude, record.longitude))
+            lowerBounds = LatLng(Math.min(lowerBounds.latitude, record.latitude), Math.min(lowerBounds.longitude, record.longitude))
+            higherBounds = LatLng(Math.max(higherBounds.latitude, record.latitude), Math.max(higherBounds.longitude, record.longitude))
+        }
+        val line = PolylineOptions()
+        line.addAll(positions)
+        val polyLine = googleMap.addPolyline(line)
+        polyLine.color = R.color.flighttrack_on_map
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(LatLngBounds(lowerBounds, higherBounds), 100))
+        this.mapFragment?.onResume()
+    }
 
     companion object {
         fun newInstance() = FlightFragment()
@@ -37,12 +97,13 @@ class FlightFragment : Fragment() {
     private lateinit var viewModel: FlightViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         this.preferences = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
         return inflater.inflate(R.layout.fragment_flight, container, false)
     }
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -53,6 +114,16 @@ class FlightFragment : Fragment() {
             val animation = AnimationUtils.loadAnimation(this.requireContext(), R.anim.pulse)
             this.dhvButton?.startAnimation(animation)
             this.upload()
+        }
+
+        this.requireActivity().setTitle(SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(args.flight.startDate))
+
+        this.mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment?
+        this.mapFragment?.onCreate(savedInstanceState)
+        this.mapFragment?.getMapAsync(mapsCallback)
+        val igcContent = args.flight.content
+        if (igcContent != null) {
+            this.igcData = IgcData(igcContent)
         }
     }
 
@@ -85,19 +156,19 @@ class FlightFragment : Fragment() {
                 }
 
                 content.append(URLEncoder.encode(key, "UTF-8")).append("=")
-                    .append(URLEncoder.encode(value, "UTF-8"))
+                        .append(URLEncoder.encode(value, "UTF-8"))
             }
 
 
             val body = RequestBody.create(
-                MediaType.parse("application/x-www-form-urlencoded"),
-                content.toString()
+                    MediaType.parse("application/x-www-form-urlencoded"),
+                    content.toString()
             )
             val request = Request.Builder()
-                .url(url)
-                .header("Accept-Language", "en")
-                .post(body)
-                .build()
+                    .url(url)
+                    .header("Accept-Language", "en")
+                    .post(body)
+                    .build()
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(request: Request?, e: IOException?) {
                     TODO("Not yet implemented")
@@ -113,19 +184,19 @@ class FlightFragment : Fragment() {
 
                         val alertBuilder = AlertDialog.Builder(this@FlightFragment.requireContext())
                         val correctedText =
-                            responseBody.replace("href='/", "href='https://www.dhv-xc.de/")
+                                responseBody.replace("href='/", "href='https://www.dhv-xc.de/")
 
                         val matcher =
-                            Pattern.compile(".*(https://www.dhv-xc.de(/xc/modules){0,1}(/leonardo){0,1}/index\\.php\\?op=show_flight&flightID=[0-9]+).*")
-                                .matcher(correctedText)
+                                Pattern.compile(".*(https://www.dhv-xc.de(/xc/modules){0,1}(/leonardo){0,1}/index\\.php\\?op=show_flight&flightID=[0-9]+).*")
+                                        .matcher(correctedText)
                         if (matcher.find()) {
                             val group = matcher.group(1)
                             val text = group?.toString()
                             if (!text.isNullOrBlank()) {
                                 args.flight.dhvXcFlightUrl = text
                                 val igcFileDao =
-                                    IgcSyncDatabase.getDatabase(this@FlightFragment.requireContext())
-                                        .igcFileDao()
+                                        IgcSyncDatabase.getDatabase(this@FlightFragment.requireContext())
+                                                .igcFileDao()
                                 igcFileDao.update(args.flight)
                             }
                         }
@@ -134,18 +205,18 @@ class FlightFragment : Fragment() {
                         this@FlightFragment.requireActivity().runOnUiThread {
                             this@FlightFragment.dhvButton?.animation?.cancel()
                             alertBuilder
-                                .setMessage(
-                                    Html.fromHtml(
-                                        correctedText,
-                                        Html.FROM_HTML_MODE_LEGACY
+                                    .setMessage(
+                                            Html.fromHtml(
+                                                    correctedText,
+                                                    Html.FROM_HTML_MODE_LEGACY
+                                            )
                                     )
-                                )
-                                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                                    dialog.dismiss()
-                                }
-                                .show()
-                                .findViewById<TextView>(android.R.id.message).movementMethod =
-                                LinkMovementMethod.getInstance()
+                                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                    .show()
+                                    .findViewById<TextView>(android.R.id.message).movementMethod =
+                                    LinkMovementMethod.getInstance()
                         }
                     }
                 }
