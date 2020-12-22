@@ -1,33 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/flight_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center"
-        android:background="#AAAAAAAA"
-        android:padding="6dp"
-        android:text="@android:string/untitled"
-        android:textColor="#000000"
-        android:translationZ="1dp" />
+    <ImageButton
+        android:id="@+id/button_map_mode"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|start"
+        android:layout_margin="10dp"
+        android:background="@color/map_controls_background"
+        android:contentDescription="@string/button_map_mode_content_description"
+        android:scaleType="centerCrop"
+        android:translationZ="1dp"
+        app:srcCompat="@android:drawable/ic_menu_mapmode" />
 
-    <androidx.fragment.app.FragmentContainerView xmlns:map="http://schemas.android.com/apk/res-auto"
+    <!-- ImageButton
+        android:id="@+id/button_share"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|right"
+        android:layout_margin="10dp"
+        android:background="@color/map_controls_background"
+        android:scaleType="centerCrop"
+        android:translationZ="1dp"
+        app:srcCompat="@android:drawable/ic_menu_share" / -->
+
+    <!--suppress AndroidUnknownAttribute - I honestly don't know why it is complaining -->
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mapView"
-        class="com.google.android.gms.maps.SupportMapFragment"
+        class="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        map:cameraZoom="16"
-        map:mapType="terrain"
-        map:uiCompass="true"
-        map:uiRotateGestures="true"
-        map:uiScrollGestures="false"
-        map:uiTiltGestures="true"
-        map:uiZoomControls="true"
-        map:uiZoomGestures="false" />
+        app:cameraZoom="16"
+        app:mapType="terrain"
+        app:uiCompass="true"
+        app:uiRotateGestures="true"
+        app:uiScrollGestures="false"
+        app:uiTiltGestures="true"
+        app:uiZoomControls="true"
+        app:uiZoomGestures="false">
+
+    </androidx.fragment.app.FragmentContainerView>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="wrap_content"
@@ -42,16 +58,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:background="#AAAAAAAA"
-            android:text="@string/button_upload_flight" />
+            android:backgroundTint="@color/map_controls_background"
+            android:text="@string/button_upload_flight"
+            android:textColor="@color/black" />
 
         <Button
             android:id="@+id/button_view_in_dhvxc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:background="#AAAAAAAA"
-            android:text="@string/button_view_flight" />
+            android:backgroundTint="@color/map_controls_background"
+            android:text="@string/button_view_flight"
+            android:textColor="@color/black" />
 
         <ImageButton
             android:id="@+id/button_upload_dhv_xc"
@@ -61,7 +79,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_margin="10dp"
-            android:background="#AAAAAAAA"
+            android:background="@color/map_controls_background"
             android:contentDescription="@string/button_dhv_xc_content_description"
             android:scaleType="centerInside"
             android:src="@drawable/dhv_xc_logo" />

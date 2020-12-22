@@ -40,6 +40,7 @@ import java.util.regex.Pattern
 
 
 class FlightFragment : Fragment() {
+    private var googleMap: GoogleMap? = null
     private lateinit var button_upload: Button
     private lateinit var button_view_in_dhvxc: Button
     private var mapFragment: SupportMapFragment? = null
@@ -60,17 +61,18 @@ class FlightFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+        this.googleMap = googleMap
         googleMap.uiSettings.isZoomControlsEnabled = true
-
         googleMap.uiSettings.isCompassEnabled = true
+        // googleMap.setPadding(0, 0, 0, 160)
         val firstBRecord = this.igcData.bRecords.first()
         val start = LatLng(firstBRecord.latitude, firstBRecord.longitude)
-        googleMap.addMarker(MarkerOptions().position(start).title("Start"))
-        googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+        googleMap.addMarker(MarkerOptions().position(start).title(getString(R.string.marker_start)))
+        googleMap.mapType = this.preferences.getInt(getString(R.string.preference_map_type), GoogleMap.MAP_TYPE_TERRAIN)
 
         val lastBRecord = this.igcData.bRecords.last()
         val landing = LatLng(lastBRecord.latitude, lastBRecord.longitude)
-        googleMap.addMarker(MarkerOptions().position(landing).title("Landing"))
+        googleMap.addMarker(MarkerOptions().position(landing).title(getString(R.string.Landing)))
 
         var lowerBounds = start
         var higherBounds = start
@@ -84,7 +86,7 @@ class FlightFragment : Fragment() {
         val line = PolylineOptions()
         line.addAll(positions)
         val polyLine = googleMap.addPolyline(line)
-        polyLine.color = R.color.black
+        polyLine.color = R.color.design_default_color_error
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(LatLngBounds(lowerBounds, higherBounds), 100))
         this.mapFragment?.onResume()
@@ -108,7 +110,19 @@ class FlightFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(FlightViewModel::class.java)
-        view?.findViewById<TextView>(R.id.flight_name)?.text = args.flight.filename
+
+        view?.findViewById<ImageButton>(R.id.button_map_mode)?.setOnClickListener {
+            val myGoogleMap = this.googleMap
+            if (myGoogleMap != null) {
+                when (myGoogleMap.mapType) {
+                    GoogleMap.MAP_TYPE_TERRAIN -> myGoogleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+                    GoogleMap.MAP_TYPE_HYBRID -> myGoogleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+                    GoogleMap.MAP_TYPE_NORMAL -> myGoogleMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+                }
+                this.preferences.edit().putInt(getString(R.string.preference_map_type), myGoogleMap.mapType).apply()
+            }
+        }
+
         this.dhvButton = view?.findViewById<ImageButton>(R.id.button_upload_dhv_xc)
         this.dhvButton?.setOnClickListener {
             if (this.button_upload.visibility == View.GONE) this.button_upload.visibility = View.VISIBLE else this.button_upload.visibility = View.GONE
@@ -195,6 +209,7 @@ class FlightFragment : Fragment() {
                     }
                     //val responseCode = response.code()
                     CoroutineScope(Dispatchers.IO).launch {
+                        @Suppress("BlockingMethodInNonBlockingContext") //Unfortunately, this library doesn't offer a suspendable function
                         val responseBody = response.body().string()
 
                         val alertBuilder = AlertDialog.Builder(this@FlightFragment.requireContext())

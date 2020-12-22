@@ -79,4 +79,8 @@
     <string name="button_upload_flight">Upload</string>
     <string name="button_view_flight">View</string>
     <string name="button_dhv_xc_content_description">DHV XC</string>
+    <string name="Landing">marker_landing</string>
+    <string name="marker_start">Start</string>
+    <string name="preference_map_type">map_type</string>
+    <string name="button_map_mode_content_description">Map mode</string>
 </resources>
