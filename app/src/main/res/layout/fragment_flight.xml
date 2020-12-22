@@ -69,18 +69,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:backgroundTint="@color/map_controls_background"
-            android:text="@string/button_upload_flight"
-            android:textColor="@color/black" />
+            android:text="@string/button_upload_flight" />
 
         <Button
             android:id="@+id/button_view_in_dhvxc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:backgroundTint="@color/map_controls_background"
-            android:text="@string/button_view_flight"
-            android:textColor="@color/black" />
+            android:text="@string/button_view_flight" />
 
         <ImageButton
             android:id="@+id/button_upload_dhv_xc"

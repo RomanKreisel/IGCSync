@@ -16,7 +16,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.button.MaterialButton
 import de.romankreisel.igcsync.MainActivity
 import de.romankreisel.igcsync.R
 
@@ -75,7 +74,7 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         }
 
         val selectDirectoryButton =
-                root.findViewById<MaterialButton>(R.id.button_select_data_directory)
+                root.findViewById<Button>(R.id.button_select_data_directory)
         selectDirectoryButton.setOnClickListener {
             requireActivity().startActivityForResult(
                     Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
