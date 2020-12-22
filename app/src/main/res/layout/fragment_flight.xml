@@ -5,12 +5,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:layout_marginTop="0dp"
+        android:paddingTop="0dp"
+        android:translationZ="1dp" />
+
     <ImageButton
         android:id="@+id/button_map_mode"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="top|start"
         android:layout_margin="10dp"
+        android:layout_marginTop="20dp"
         android:background="@color/map_controls_background"
         android:contentDescription="@string/button_map_mode_content_description"
         android:scaleType="centerCrop"
@@ -31,7 +42,7 @@
     <!--suppress AndroidUnknownAttribute - I honestly don't know why it is complaining -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mapView"
-        class="com.google.android.gms.maps.MapFragment"
+        class="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cameraZoom="16"

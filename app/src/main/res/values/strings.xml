@@ -83,4 +83,5 @@
     <string name="marker_start">Start</string>
     <string name="preference_map_type">map_type</string>
     <string name="button_map_mode_content_description">Map mode</string>
+    <string name="alert_text_error_during_upload">An error occurred during upload, please try again later.</string>
 </resources>

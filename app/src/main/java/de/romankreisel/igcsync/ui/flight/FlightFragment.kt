@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -40,10 +41,11 @@ import java.util.regex.Pattern
 
 
 class FlightFragment : Fragment() {
+    private lateinit var progressBar: ProgressBar
     private var googleMap: GoogleMap? = null
     private lateinit var button_upload: Button
     private lateinit var button_view_in_dhvxc: Button
-    private var mapFragment: SupportMapFragment? = null
+    private lateinit var mapFragment: SupportMapFragment
     private lateinit var igcData: IgcData
 
     // private var mapView: MapView? = null
@@ -89,7 +91,7 @@ class FlightFragment : Fragment() {
         polyLine.color = R.color.design_default_color_error
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(LatLngBounds(lowerBounds, higherBounds), 100))
-        this.mapFragment?.onResume()
+        this.mapFragment.onResume()
     }
 
     companion object {
@@ -111,7 +113,7 @@ class FlightFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(FlightViewModel::class.java)
 
-        view?.findViewById<ImageButton>(R.id.button_map_mode)?.setOnClickListener {
+        requireView().findViewById<ImageButton>(R.id.button_map_mode)?.setOnClickListener {
             val myGoogleMap = this.googleMap
             if (myGoogleMap != null) {
                 when (myGoogleMap.mapType) {
@@ -123,20 +125,20 @@ class FlightFragment : Fragment() {
             }
         }
 
-        this.dhvButton = view?.findViewById<ImageButton>(R.id.button_upload_dhv_xc)
+        this.dhvButton = this.requireView().findViewById<ImageButton>(R.id.button_upload_dhv_xc)
         this.dhvButton?.setOnClickListener {
             if (this.button_upload.visibility == View.GONE) this.button_upload.visibility = View.VISIBLE else this.button_upload.visibility = View.GONE
             if (this.button_view_in_dhvxc.visibility == View.GONE && !args.flight.dhvXcFlightUrl.isNullOrBlank()) this.button_view_in_dhvxc.visibility = View.VISIBLE else this.button_view_in_dhvxc.visibility = View.GONE
         }
 
-        this.button_upload = view?.findViewById<Button>(R.id.button_upload)!!
+        this.button_upload = this.requireView().findViewById<Button>(R.id.button_upload)!!
         this.button_upload.visibility = View.GONE
         this.button_upload.setOnClickListener {
             this.upload()
             this.button_view_in_dhvxc.visibility = View.GONE
             this.button_upload.visibility = View.GONE
         }
-        this.button_view_in_dhvxc = view?.findViewById<Button>(R.id.button_view_in_dhvxc)!!
+        this.button_view_in_dhvxc = this.requireView().findViewById<Button>(R.id.button_view_in_dhvxc)!!
         this.button_view_in_dhvxc.visibility = View.GONE
         this.button_view_in_dhvxc.setOnClickListener {
             this.button_view_in_dhvxc.visibility = View.GONE
@@ -147,16 +149,22 @@ class FlightFragment : Fragment() {
 
         this.requireActivity().setTitle(SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(args.flight.startDate!!))
 
-        this.mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment?
-        this.mapFragment?.onCreate(savedInstanceState)
-        this.mapFragment?.getMapAsync(mapsCallback)
+        this.mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
+        this.mapFragment.onCreate(savedInstanceState)
+        this.mapFragment.getMapAsync(mapsCallback)
         val igcContent = args.flight.content
         if (igcContent != null) {
             this.igcData = IgcData(igcContent)
         }
+
+        this.progressBar = this.requireView().findViewById<ProgressBar>(R.id.progressBar)
+        this.progressBar.visibility = View.GONE
     }
 
     private fun upload() {
+        this.progressBar.visibility = View.VISIBLE
+        this.progressBar.isIndeterminate = true
+        this.progressBar.animate()
         CoroutineScope(Dispatchers.IO).launch {
             val client = OkHttpClient()
             val parameters = HashMap<String, String>()
@@ -200,14 +208,45 @@ class FlightFragment : Fragment() {
                     .build()
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(request: Request?, e: IOException?) {
-                    TODO("Not yet implemented")
+                    this@FlightFragment.progressBar.visibility = View.VISIBLE
+                    this@FlightFragment.progressBar.clearAnimation()
+                    this@FlightFragment.requireActivity().runOnUiThread {
+                        AlertDialog.Builder(this@FlightFragment.requireContext())
+                                .setMessage(getString(R.string.alert_text_error_during_upload))
+                                .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                                .show()
+                    }
                 }
 
                 override fun onResponse(response: Response?) {
-                    if (response == null) {
-                        TODO("Handle exception")
+                    this@FlightFragment.requireActivity().runOnUiThread {
+                        this@FlightFragment.progressBar.visibility = View.GONE
+                        this@FlightFragment.progressBar.clearAnimation()
                     }
-                    //val responseCode = response.code()
+                    if (response == null) {
+                        this@FlightFragment.requireActivity().runOnUiThread {
+                            AlertDialog.Builder(this@FlightFragment.requireContext())
+                                    .setMessage(getString(R.string.alert_text_error_during_upload))
+                                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                    .show()
+                        }
+                        return
+                    }
+                    if (response.code() != 200) {
+                        this@FlightFragment.requireActivity().runOnUiThread {
+                            AlertDialog.Builder(this@FlightFragment.requireContext())
+                                    .setMessage(getString(R.string.alert_text_error_during_upload))
+                                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                    .show()
+                        }
+                        return
+                    }
                     CoroutineScope(Dispatchers.IO).launch {
                         @Suppress("BlockingMethodInNonBlockingContext") //Unfortunately, this library doesn't offer a suspendable function
                         val responseBody = response.body().string()
