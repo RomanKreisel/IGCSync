@@ -1,8 +1,7 @@
 <resources>
     <!-- General stuff -->
-    <string name="app_name" translatable="false">IGC Sync</string>
+    <string name="app_name">IGC Sync</string>
 
-    <!-- preferences -->
     <string name="preference_igc_directory_url" translatable="false">igc_directory</string>
     <string name="preference_glider_category" translatable="false">glider_category</string>
     <string name="preference_start_type" translatable="false">start_type</string>
@@ -10,35 +9,24 @@
     <string name="preference_glider_certification" translatable="false">glider_certification</string>
     <string name="preference_glider_model" translatable="false">glider_model</string>
     <string name="preference_glider_size" translatable="false">glider_size</string>
-    <string name="preference_map_type">map_type</string>
+    <string name="preference_map_type" translatable="false">map_type</string>
     <string name="preference_minimum_flight_duration_seconds" translatable="false">minimum_flight_duration_seconds</string>
 
-    <!-- programmatic strings -->
     <string name="default_leonardo_submit_flight_url" translatable="false">http://www.xc.dhv.de/xc/modules/leonardo/flight_submit.php</string>
     <string name="default_minimum_flight_duration_seconds" translatable="false">60</string>
 
 
     <!-- Translatable UI strings -->
-    <string name="title_import">Import</string>
-    <string name="title_upload">Upload</string>
     <string name="title_settings">Settings</string>
     <string name="label_data_directory">Data directory:</string>
-    <string name="label_data_directory_not_set">No data directory set yet</string>
     <string name="button_select_data_directory">Select</string>
-    <string name="label_data_directory_scan_in_progress">Scanning data directory</string>
-    <string name="label_data_directory_ready_for_scan">Ready for import</string>
-    <string name="label_data_directory_not_ready_for_scan">Data directory cannot be accessed. Invalid settings or Vario removed from USB?</string>
-    <string name="label_perform_scan">Import new flights</string>
     <string name="warning_error_accessing_data_directory">An error occurred accessing the data directory, please check the settings.</string>
-    <string name="label_scanning">Scanning for new flights…</string>
     <string name="label_scan_finished_with_files_found">Search finished,  %1$d new flights found</string>
     <string name="label_scan_finished_with_file_found">Search finished, one new flight found</string>
     <string name="label_scan_finished_with_no_files_found">Search finished, no new flights found</string>
     <string name="label_scan_failed">The search failed on file %1$s</string>
     <string name="label_scan_cancelled">Search cancelled</string>
     <string name="label_scanning_progress">Importing flights (%1$d%%)</string>
-    <string name="button_ignore">Ignore</string>
-    <string name="button_upload_single">Upload</string>
     <string name="headline_dhv_xc" translatable="false">DHV-XC</string>
     <string name="headline_general">General settings</string>
     <string name="label_username">Username</string>
@@ -56,43 +44,33 @@
     <string name="hint_glider_model" translatable="false">Masala</string>
     <string name="hint_glider_size" translatable="false">S</string>
     <string name="label_ignore_flights_below_seconds">Ignore flights below (seconds)</string>
-    <string name="toast_select_data_directory_first">Before you can use the app, you need to connect your vario and select it as data directory.</string>
-    <string name="description_floating_add_button">Import flights</string>
 
     <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="button_description_import_new_flights">Import new flights</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="toast_scan_for_new_flights">Searching for new flights…</string>
     <string name="label_filename">Filename:</string>
     <string name="label_flight_start_time">Start:</string>
     <string name="label_flight_duration">Duration:</string>
     <string name="content_description_flight_on_dhvxc">Flight available on DHV-XC</string>
-    <string name="button_upload_tandem">Tandem Cup</string>
-    <string name="button_upload_fun_cup">Fun Cup</string>
-    <string name="button_upload_standard">Standard Cup</string>
-    <string name="button_upload_sport">Sport Cup</string>
-    <string name="button_upload_performance">Performance Cup</string>
+    <string name="button_upload_tandem" translatable="false">Tandem Cup</string>
+    <string name="button_upload_fun_cup" translatable="false">Fun Cup</string>
+    <string name="button_upload_standard" translatable="false">Standard Cup</string>
+    <string name="button_upload_sport" translatable="false">Sport Cup</string>
+    <string name="button_upload_performance" translatable="false">Performance Cup</string>
     <string name="button_upload_flightbook">Flightbook</string>
     <string name="button_view_flight">View</string>
-    <string name="button_dhv_xc_content_description">DHV XC</string>
-    <string name="Landing">marker_landing</string>
+    <string name="button_dhv_xc_content_description" translatable="false">DHV XC</string>
+    <string name="marker_landing">Landing</string>
     <string name="marker_start">Start</string>
     <string name="button_map_mode_content_description">Map mode</string>
     <string name="alert_text_error_during_upload">An error occurred during upload, please try again later.</string>
-    <string name="label_offer_upload_to_competitions">Offer upload to competitions</string>
     <string name="label_offer_upload_to_tandem_cup">Offer upload to tandem cup</string>
-    <string name="preference_offer_upload_tandem_cup">offer_upload_tandem_cup</string>
+    <string name="preference_offer_upload_tandem_cup" translatable="false">offer_upload_tandem_cup</string>
     <string name="label_upload_into">Upload into</string>
     <string name="title_about_app">About this app</string>
     <string name="action_about_this_app">About this app</string>
     <string name="content_description_application_logo">Application Logo</string>
+    <string name="label_visit_us_on_github"><![CDATA[Visit us on <a href=\"https://github.com/RomanKreisel/IGCSync\">GitHub</a>]]></string>
+    <string name="label_mention_logo_origin"><![CDATA[Many thanks go to <a href=\"https://pixabay.com/de/users/gdj-1086657/\">Gordon Johnson</a>, for unkowingly providing a great <a href=\"https://pixabay.com/de/vectors/paragleiten-fallschirm-silhouette-4037231/\">image</a> as our new logo]]></string>
 </resources>

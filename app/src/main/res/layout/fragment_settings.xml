@@ -44,6 +44,7 @@
             <TextView
                 android:labelFor="@+id/text_minimim_flight_duration_seconds"
                 android:maxWidth="0dp"
+                android:paddingBottom="10dp"
                 android:text="@string/label_ignore_flights_below_seconds" />
 
             <EditText

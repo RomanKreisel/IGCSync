@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
     <color name="flighttrack_on_map">#FFFF0000</color>
     <color name="map_controls_background">#CCEEEEEE</color>
 </resources>

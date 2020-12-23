@@ -89,7 +89,9 @@ class FlightFragment : Fragment() {
 
         val lastBRecord = this.igcData.bRecords.last()
         val landing = LatLng(lastBRecord.latitude, lastBRecord.longitude)
-        googleMap.addMarker(MarkerOptions().position(landing).title(getString(R.string.Landing)))
+        googleMap.addMarker(
+            MarkerOptions().position(landing).title(getString(R.string.marker_landing))
+        )
 
         var lowerBounds = start
         var higherBounds = start

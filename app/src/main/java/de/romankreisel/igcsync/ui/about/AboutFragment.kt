@@ -34,7 +34,7 @@ class AboutFragment : Fragment() {
 
         root.findViewById<TextView>(R.id.textView_github).apply {
             text = Html.fromHtml(
-                "Visit us on <a href=\"https://github.com/RomanKreisel/IGCSync\">GitHub</a>",
+                getString(R.string.label_visit_us_on_github),
                 Html.FROM_HTML_MODE_LEGACY
             )
             movementMethod = LinkMovementMethod.getInstance()
@@ -42,7 +42,7 @@ class AboutFragment : Fragment() {
 
         root.findViewById<TextView>(R.id.textView_pixabay_logo).apply {
             text = Html.fromHtml(
-                "Many thanks go to <a href=\"https://pixabay.com/de/users/gdj-1086657/\">Gordon Johnson</a>, for unkowingly providing a great <a href=\"https://pixabay.com/de/vectors/paragleiten-fallschirm-silhouette-4037231/\">image</a> as our new logo",
+                getString(R.string.label_mention_logo_origin),
                 Html.FROM_HTML_MODE_LEGACY
             )
             movementMethod = LinkMovementMethod.getInstance()
