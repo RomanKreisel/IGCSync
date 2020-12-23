@@ -73,4 +73,5 @@
     <string name="content_description_application_logo">Application Logo</string>
     <string name="label_visit_us_on_github"><![CDATA[Visit us on <a href=\"https://github.com/RomanKreisel/IGCSync\">GitHub</a>]]></string>
     <string name="label_mention_logo_origin"><![CDATA[Many thanks go to <a href=\"https://pixabay.com/de/users/gdj-1086657/\">Gordon Johnson</a>, for unkowingly providing a great <a href=\"https://pixabay.com/de/vectors/paragleiten-fallschirm-silhouette-4037231/\">image</a> as our new logo]]></string>
+    <string name="alert_text_upload_started">Uploading…</string>
 </resources>

@@ -11,10 +11,7 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -307,6 +304,14 @@ class FlightFragment : Fragment() {
         this.progressBar.visibility = View.VISIBLE
         this.progressBar.isIndeterminate = true
         this.progressBar.animate()
+
+        Toast.makeText(
+            this.requireContext(),
+            getString(R.string.alert_text_upload_started),
+            Toast.LENGTH_LONG
+        ).show()
+
+
         CoroutineScope(Dispatchers.IO).launch {
             val client = OkHttpClient()
             val parameters = HashMap<String, String>()
