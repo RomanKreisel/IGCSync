@@ -60,7 +60,8 @@ class BRecord(igcData: IgcData, line: String) {
         private set
 
     init {
-        val matcher = Pattern.compile("^[B](\\d{6})(\\d{2})(\\d{5})([NS])(\\d{3})(\\d{5})([EW]).*$").matcher(line)
+        val matcher = Pattern.compile("^[B](\\d{6})(\\d{2})(\\d{5})([NS])(\\d{3})(\\d{5})([EW]).*$")
+            .matcher(line)
         if (!matcher.find()) {
             throw IgcException("Unexpected B Record line")
         }
@@ -75,16 +76,18 @@ class BRecord(igcData: IgcData, line: String) {
         val sdtf = SimpleDateFormat("yyyy-MM-dd HHmmss")
         sdtf.timeZone = TimeZone.getTimeZone("UTC")
         this.recordTime = sdtf.parse(
-                sdf.format(previousDate) + " " + matcher.group(1)
+            sdf.format(previousDate) + " " + matcher.group(1)
         ) ?: Date(0)
 
         //latitude
         val latitudeMultiplier = if (matcher.group(4) == "N") 1 else -1
-        this.latitude = latitudeMultiplier * matcher.group(2)!!.toInt() + matcher.group(3)!!.toInt() / 60000.0
+        this.latitude =
+            latitudeMultiplier * matcher.group(2)!!.toInt() + matcher.group(3)!!.toInt() / 60000.0
 
         //Longitude
         val longitudeMultiplier = if (matcher.group(7) == "E") 1 else -1
-        this.longitude = longitudeMultiplier * matcher.group(5)!!.toInt() + matcher.group(6)!!.toInt() / 60000.0
+        this.longitude =
+            longitudeMultiplier * matcher.group(5)!!.toInt() + matcher.group(6)!!.toInt() / 60000.0
 
 
         if (igcData.bRecords.count() > 0 && igcData.bRecords.last().recordTime.time > this.recordTime.time) { //the flight just outlasted midnight (utc)
@@ -101,7 +104,10 @@ class Headers {
     @SuppressLint("SimpleDateFormat")
     fun parseHeaderLine(line: String) {
         if (line.startsWith("HFDTE") && line.length == 11) {
-            this.flightDate = SimpleDateFormat("ddMMyy").parse(line.substring(5))
+            val dateString = line.substring(5)
+            val sdf = SimpleDateFormat("ddMMyy")
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
+            this.flightDate = sdf.parse(dateString)
         } else if (line.startsWith("HFPLT")) {
             this.pilot = line.substring(5)
         } else if (line.startsWith("HFGTYGLIDERTYPE")) {
