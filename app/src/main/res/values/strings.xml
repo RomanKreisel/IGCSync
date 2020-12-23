@@ -92,4 +92,7 @@
     <string name="label_offer_upload_to_tandem_cup">Offer upload to tandem cup</string>
     <string name="preference_offer_upload_tandem_cup">offer_upload_tandem_cup</string>
     <string name="label_upload_into">Upload into</string>
+    <string name="title_about_app">About this app</string>
+    <string name="action_about_this_app">About this app</string>
+    <string name="content_description_application_logo">Application Logo</string>
 </resources>

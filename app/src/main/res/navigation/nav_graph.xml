@@ -35,4 +35,13 @@
     <action
         android:id="@+id/action_to_SettingsFragment"
         app:destination="@id/SettingsFragment" />
+
+    <fragment
+        android:id="@+id/AboutFragment"
+        android:name="de.romankreisel.igcsync.ui.about.AboutFragment"
+        android:label="@string/title_about_app"
+        tools:layout="@layout/fragment_about" />
+    <action
+        android:id="@+id/action_to_AboutFragment"
+        app:destination="@id/AboutFragment" />
 </navigation>

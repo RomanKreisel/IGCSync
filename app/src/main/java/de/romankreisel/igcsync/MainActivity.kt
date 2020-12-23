@@ -71,6 +71,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 this@MainActivity.navController.navigate(R.id.action_to_SettingsFragment)
                 return true
             }
+            R.id.action_about -> {
+                this@MainActivity.navController.navigate(R.id.action_to_AboutFragment)
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
