@@ -19,7 +19,7 @@
         android:id="@+id/button_map_mode"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_gravity="top|start"
+        android:layout_gravity="top|end"
         android:layout_margin="10dp"
         android:layout_marginTop="20dp"
         android:background="@color/map_controls_background"

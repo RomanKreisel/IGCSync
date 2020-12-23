@@ -15,6 +15,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -108,7 +109,7 @@ class FlightFragment : Fragment() {
         val line = PolylineOptions()
         line.addAll(positions)
         val polyLine = googleMap.addPolyline(line)
-        polyLine.color = R.color.design_default_color_error
+        polyLine.color = ContextCompat.getColor(this.requireContext(), R.color.flighttrack_on_map)
 
         googleMap.moveCamera(
             CameraUpdateFactory.newLatLngBounds(
