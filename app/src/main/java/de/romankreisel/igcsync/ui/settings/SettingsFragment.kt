@@ -209,7 +209,7 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
                 getString(R.string.preference_offer_upload_tandem_cup),
                 false
             )
-            setOnCheckedChangeListener { buttonView, isChecked ->
+            setOnCheckedChangeListener { _, isChecked ->
                 preferences.edit()
                     .putBoolean(getString(R.string.preference_offer_upload_tandem_cup), isChecked)
                     .apply()

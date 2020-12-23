@@ -6,28 +6,66 @@
     android:layout_height="match_parent"
     tools:context=".ui.about.AboutFragment">
 
-
-    <ImageView
-        android:id="@+id/imageView"
+    <Space
+        android:id="@+id/space_above_logo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/igcsync_background"
-        android:contentDescription="@string/content_description_application_logo"
-        android:src="@drawable/igcsync_foreground"
+        android:layout_height="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/CardView_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:elevation="10dp"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space_above_logo">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/igcsync_background"
+            android:contentDescription="@string/content_description_application_logo"
+            android:src="@drawable/igcsync_foreground" />
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/textView_app_name_and_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:paddingBottom="30dp"
+        android:text="@string/app_name"
+        android:textSize="28sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CardView_logo" />
+
+    <TextView
+        android:id="@+id/textView_github"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="18dp"
+        android:text="@android:string/untitled"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_app_name_and_version" />
+
+    <TextView
+        android:id="@+id/textView_pixabay_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="@android:string/untitled"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_github" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
