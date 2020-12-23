@@ -111,19 +111,17 @@
         <item>Triple Seven</item>
     </string-array>
     <string-array name="glider_certification">
-        <item />
         <item>LTF 1</item>
         <item tools:ignore="TypographyFractions">LTF 1/2</item>
         <item>LTF 2</item>
         <item>LTF 2/3</item>
         <item>LTF 3</item>
-        <item>EN A</item>
-        <item>EN B</item>
-        <item>EN C</item>
-        <item>EN D</item>
+        <item>EN/LTF A</item>
+        <item>EN/LTF B</item>
+        <item>EN/LTF C</item>
+        <item>EN/LTF D</item>
     </string-array>
     <string-array name="glider_certification_id">
-        <item />
         <item>1</item>
         <item>2</item>
         <item>4</item>

@@ -19,8 +19,9 @@ import androidx.lifecycle.ViewModelProvider
 import de.romankreisel.igcsync.MainActivity
 import de.romankreisel.igcsync.R
 
+
 class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
-        AdapterView.OnItemSelectedListener {
+    AdapterView.OnItemSelectedListener {
 
     private lateinit var gliderCertificationSpinner: Spinner
     private lateinit var gliderManufacturerText: AutoCompleteTextView
@@ -33,12 +34,12 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
 
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         settingsViewModel =
-                ViewModelProvider(this).get(SettingsViewModel::class.java)
+            ViewModelProvider(this).get(SettingsViewModel::class.java)
         root = inflater.inflate(R.layout.fragment_settings, container, false)
         preferences = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
 
@@ -47,7 +48,7 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         root.findViewById<TextView>(R.id.label_igc_data_directory).apply {
             this@SettingsFragment.defaultIgcDataDirectoryButtonTextColorStateList = this.textColors
             if (preferences.getString(getString(R.string.preference_igc_directory_url), "")
-                            .isNullOrBlank()
+                    .isNullOrBlank()
             ) {
                 setTextColor(Color.RED)
                 setTypeface(null, Typeface.BOLD)
@@ -56,8 +57,8 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
 
         root.findViewById<EditText>(R.id.text_minimim_flight_duration_seconds).apply {
             val preferenceValue = preferences.getInt(
-                    getString(R.string.preference_minimum_flight_duration_seconds),
-                    -1
+                getString(R.string.preference_minimum_flight_duration_seconds),
+                -1
             )
             if (preferenceValue >= 0) {
                 text.clear()
@@ -66,19 +67,19 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
             addTextChangedListener {
                 if (!text.toString().isBlank()) {
                     preferences.edit().putInt(
-                            getString(R.string.preference_minimum_flight_duration_seconds),
-                            text.toString().toInt()
+                        getString(R.string.preference_minimum_flight_duration_seconds),
+                        text.toString().toInt()
                     ).apply()
                 }
             }
         }
 
         val selectDirectoryButton =
-                root.findViewById<Button>(R.id.button_select_data_directory)
+            root.findViewById<Button>(R.id.button_select_data_directory)
         selectDirectoryButton.setOnClickListener {
             requireActivity().startActivityForResult(
-                    Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
-                    MainActivity.REQUEST_CODE_IGC_DATA_DIRECTORY
+                Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
+                MainActivity.REQUEST_CODE_IGC_DATA_DIRECTORY
             )
         }
         settingsViewModel.selectDirectoryButtonText.observe(viewLifecycleOwner, {
@@ -88,16 +89,19 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         gliderCategorySpinner = root.findViewById<Spinner>(R.id.spinner_glider_category)
         gliderCategorySpinner.apply {
             adapter = ArrayAdapter.createFromResource(
-                    this@SettingsFragment.requireContext(),
-                    R.array.glider_category,
-                    android.R.layout.simple_spinner_dropdown_item
+                this@SettingsFragment.requireContext(),
+                R.array.glider_category,
+                android.R.layout.simple_spinner_dropdown_item
             )
+            val gliderCategoryArray = resources.getStringArray(R.array.glider_category_id)
             val preselected =
-                    preferences.getString(getString(R.string.preference_glider_category), "")
+                preferences.getString(
+                    getString(R.string.preference_glider_category),
+                    gliderCategoryArray[0]
+                ) ?: gliderCategoryArray[0]
             onItemSelectedListener = this@SettingsFragment
             if (preselected != null && preselected.isNotBlank()) {
-                val index =
-                        resources.getStringArray(R.array.glider_category_id).indexOf(preselected)
+                val index = gliderCategoryArray.indexOf(preselected)
                 setSelection(Math.max(0, index))
             }
         }
@@ -105,38 +109,39 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         startTypeSpinner = root.findViewById<Spinner>(R.id.spinner_start_type)
         startTypeSpinner.apply {
             adapter = ArrayAdapter.createFromResource(
-                    this@SettingsFragment.requireContext(),
-                    R.array.start_type,
-                    android.R.layout.simple_spinner_dropdown_item
+                this@SettingsFragment.requireContext(),
+                R.array.start_type,
+                android.R.layout.simple_spinner_dropdown_item
             )
             onItemSelectedListener = this@SettingsFragment
+            val startTypeArray = resources.getStringArray(R.array.glider_category_id)
             val preselected =
-                    preferences.getString(getString(R.string.preference_start_type), "")
-            if (preselected != null && preselected.isNotBlank()) {
-                val index =
-                        resources.getStringArray(R.array.glider_category_id).indexOf(preselected)
+                preferences.getString(getString(R.string.preference_start_type), startTypeArray[0])
+                    ?: startTypeArray[0]
+            if (preselected.isNotBlank()) {
+                val index = startTypeArray.indexOf(preselected)
                 setSelection(Math.max(0, index))
             }
         }
 
         gliderManufacturerText =
-                root.findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView_glider_manufacturer)
+            root.findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView_glider_manufacturer)
         gliderManufacturerText.apply {
             setAdapter(
-                    ArrayAdapter.createFromResource(
-                            this@SettingsFragment.requireContext(),
-                            R.array.glider_manufacturer,
-                            android.R.layout.simple_spinner_dropdown_item
-                    )
+                ArrayAdapter.createFromResource(
+                    this@SettingsFragment.requireContext(),
+                    R.array.glider_manufacturer,
+                    android.R.layout.simple_spinner_dropdown_item
+                )
             )
             threshold = 1
             addTextChangedListener {
                 preferences.edit()
-                        .putString(getString(R.string.preference_glider_manufacturer), text?.toString())
-                        .apply()
+                    .putString(getString(R.string.preference_glider_manufacturer), text?.toString())
+                    .apply()
             }
             val preconfigured =
-                    preferences.getString(getString(R.string.preference_glider_manufacturer), "")
+                preferences.getString(getString(R.string.preference_glider_manufacturer), "")
             if (preconfigured != null && preconfigured.isNotBlank()) {
                 text.clear()
                 text.append(preconfigured)
@@ -148,7 +153,7 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
             text.append(preferences.getString(getString(R.string.preference_glider_model), ""))
             addTextChangedListener {
                 preferences.edit()
-                        .putString(getString(R.string.preference_glider_model), text.toString()).apply()
+                    .putString(getString(R.string.preference_glider_model), text.toString()).apply()
             }
         }
 
@@ -157,7 +162,7 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
             text.append(preferences.getString(getString(R.string.preference_glider_size), ""))
             addTextChangedListener {
                 preferences.edit()
-                        .putString(getString(R.string.preference_glider_size), text.toString()).apply()
+                    .putString(getString(R.string.preference_glider_size), text.toString()).apply()
             }
         }
 
@@ -165,32 +170,20 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         gliderCertificationSpinner = root.findViewById<Spinner>(R.id.spinner_glider_certification)
         gliderCertificationSpinner.apply {
             adapter = ArrayAdapter.createFromResource(
-                    this@SettingsFragment.requireContext(),
-                    R.array.glider_certification,
-                    android.R.layout.simple_spinner_dropdown_item
+                this@SettingsFragment.requireContext(),
+                R.array.glider_certification,
+                android.R.layout.simple_spinner_dropdown_item
             )
             onItemSelectedListener = this@SettingsFragment
+            val gliderCertificationArray = resources.getStringArray(R.array.glider_certification_id)
             val preselected =
-                    preferences.getString(getString(R.string.preference_glider_certification), "")
-            if (preselected != null && preselected.isNotBlank()) {
-                val index =
-                        resources.getStringArray(R.array.glider_certification_id).indexOf(preselected)
+                preferences.getString(
+                    getString(R.string.preference_glider_certification),
+                    gliderCertificationArray[6]
+                ) ?: gliderCertificationArray[6]
+            if (preselected.isNotBlank()) {
+                val index = gliderCertificationArray.indexOf(preselected)
                 setSelection(Math.max(0, index))
-            }
-        }
-
-        root.findViewById<EditText>(R.id.edit_text_leonardo_server).apply {
-            text.clear()
-            var url = preferences.getString(
-                    "leonardo_submit_flight_url",
-                    getString(R.string.default_leonardo_submit_flight_url)
-            )
-            if (url == null || url.isBlank()) {
-                url = getString(R.string.default_leonardo_submit_flight_url)
-            }
-            text.append(url)
-            addTextChangedListener { text ->
-                preferences.edit().putString("leonardo_submit_flight_url", text?.toString()).apply()
             }
         }
 
@@ -211,6 +204,18 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
             }
         }
 
+        root.findViewById<CheckBox>(R.id.checkbox_offer_upload_to_tandem).apply {
+            isChecked = preferences.getBoolean(
+                getString(R.string.preference_offer_upload_tandem_cup),
+                false
+            )
+            setOnCheckedChangeListener { buttonView, isChecked ->
+                preferences.edit()
+                    .putBoolean(getString(R.string.preference_offer_upload_tandem_cup), isChecked)
+                    .apply()
+            }
+        }
+
         preferences.registerOnSharedPreferenceChangeListener(this)
         this.updateViewModel(preferences)
         return root
@@ -228,8 +233,8 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
 
     private fun updateViewModel(sharedPreferences: SharedPreferences) {
         val igcDirectoryUrlString = sharedPreferences.getString(
-                getString(R.string.preference_igc_directory_url),
-                null
+            getString(R.string.preference_igc_directory_url),
+            null
         )
         if (igcDirectoryUrlString != null && igcDirectoryUrlString.isNotBlank()) {
             root.findViewById<TextView>(R.id.label_igc_data_directory).apply {
@@ -237,7 +242,7 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
                 setTypeface(null, Typeface.NORMAL)
             }
             val igcDirectoryDocumentFile =
-                    DocumentFile.fromTreeUri(this.requireActivity(), Uri.parse(igcDirectoryUrlString))
+                DocumentFile.fromTreeUri(this.requireActivity(), Uri.parse(igcDirectoryUrlString))
             settingsViewModel.selectDirectoryButtonText.apply {
                 value = igcDirectoryDocumentFile?.name
             }
@@ -262,24 +267,24 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         when (parent?.id) {
             this.gliderCategorySpinner.id -> {
                 val gliderCategoryId =
-                        this.resources.getStringArray(R.array.glider_category_id)[position]
+                    this.resources.getStringArray(R.array.glider_category_id)[position]
                 preferences.edit()
-                        .putString(getString(R.string.preference_glider_category), gliderCategoryId)
-                        .apply()
+                    .putString(getString(R.string.preference_glider_category), gliderCategoryId)
+                    .apply()
             }
             this.startTypeSpinner.id -> {
                 val startTypeId =
-                        this.resources.getStringArray(R.array.start_type_id)[position]
+                    this.resources.getStringArray(R.array.start_type_id)[position]
                 preferences.edit()
-                        .putString(getString(R.string.preference_start_type), startTypeId)
-                        .apply()
+                    .putString(getString(R.string.preference_start_type), startTypeId)
+                    .apply()
             }
             this.gliderCertificationSpinner.id -> {
                 val startTypeId =
-                        this.resources.getStringArray(R.array.glider_certification_id)[position]
+                    this.resources.getStringArray(R.array.glider_certification_id)[position]
                 preferences.edit()
-                        .putString(getString(R.string.preference_glider_certification), startTypeId)
-                        .apply()
+                    .putString(getString(R.string.preference_glider_certification), startTypeId)
+                    .apply()
             }
         }
     }

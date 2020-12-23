@@ -188,24 +188,22 @@
 
         <TableRow>
 
-            <TextView
-                android:labelFor="@+id/edit_text_leonardo_server"
-                android:text="@string/label_dhv_xc_flight_submit_url" />
-
-            <EditText
-                android:id="@+id/edit_text_leonardo_server"
-                android:autofillHints=""
-                android:inputType="textUri"
-                android:maxWidth="0dp" />
-        </TableRow>
-
-        <TableRow>
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_span="2"
                 android:background="?android:attr/listDivider" />
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView android:text="@string/label_offer_upload_to_tandem_cup" />
+
+            <CheckBox
+                android:id="@+id/checkbox_offer_upload_to_tandem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </TableRow>
 
 

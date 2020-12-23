@@ -10,6 +10,8 @@
     <string name="preference_glider_certification" translatable="false">glider_certification</string>
     <string name="preference_glider_model" translatable="false">glider_model</string>
     <string name="preference_glider_size" translatable="false">glider_size</string>
+    <string name="preference_map_type">map_type</string>
+    <string name="preference_minimum_flight_duration_seconds" translatable="false">minimum_flight_duration_seconds</string>
 
     <!-- programmatic strings -->
     <string name="default_leonardo_submit_flight_url" translatable="false">http://www.xc.dhv.de/xc/modules/leonardo/flight_submit.php</string>
@@ -43,7 +45,6 @@
     <string name="hint_username_john_doe">JohnDoe</string>
     <string name="label_password">Password</string>
     <string name="hint_password">YourSecretPassword</string>
-    <string name="label_dhv_xc_flight_submit_url" translatable="false">URL</string>
     <string name="headline_pilot_settings">Pilot settings</string>
     <string name="label_glider_category">Glider Category</string>
     <string name="label_start_type">Start type</string>
@@ -56,7 +57,6 @@
     <string name="hint_glider_size" translatable="false">S</string>
     <string name="label_ignore_flights_below_seconds">Ignore flights below (seconds)</string>
     <string name="toast_select_data_directory_first">Before you can use the app, you need to connect your vario and select it as data directory.</string>
-    <string name="preference_minimum_flight_duration_seconds" translatable="false">minimum_flight_duration_seconds</string>
     <string name="description_floating_add_button">Import flights</string>
 
     <string name="action_settings">Settings</string>
@@ -76,12 +76,20 @@
     <string name="label_flight_start_time">Start:</string>
     <string name="label_flight_duration">Duration:</string>
     <string name="content_description_flight_on_dhvxc">Flight available on DHV-XC</string>
-    <string name="button_upload_flight">Upload</string>
+    <string name="button_upload_tandem">Tandem Cup</string>
+    <string name="button_upload_fun_cup">Fun Cup</string>
+    <string name="button_upload_standard">Standard Cup</string>
+    <string name="button_upload_sport">Sport Cup</string>
+    <string name="button_upload_performance">Performance Cup</string>
+    <string name="button_upload_flightbook">Flightbook</string>
     <string name="button_view_flight">View</string>
     <string name="button_dhv_xc_content_description">DHV XC</string>
     <string name="Landing">marker_landing</string>
     <string name="marker_start">Start</string>
-    <string name="preference_map_type">map_type</string>
     <string name="button_map_mode_content_description">Map mode</string>
     <string name="alert_text_error_during_upload">An error occurred during upload, please try again later.</string>
+    <string name="label_offer_upload_to_competitions">Offer upload to competitions</string>
+    <string name="label_offer_upload_to_tandem_cup">Offer upload to tandem cup</string>
+    <string name="preference_offer_upload_tandem_cup">offer_upload_tandem_cup</string>
+    <string name="label_upload_into">Upload into</string>
 </resources>
