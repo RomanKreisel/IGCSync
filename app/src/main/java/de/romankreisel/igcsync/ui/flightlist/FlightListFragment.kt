@@ -1,5 +1,6 @@
 package de.romankreisel.igcsync.ui.flightlist
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +43,7 @@ import java.util.*
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
+class FlightListFragment : Fragment(), Observer<WorkInfo>, IgcFileItemListener {
 
     private var recyclerLayoutState: Parcelable? = null
     private lateinit var recyclerViewLayoutManager: LinearLayoutManager
@@ -101,6 +103,12 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
         this.recyclerViewLayoutManager.onRestoreInstanceState(this.recyclerLayoutState)
         return root
     }
+
+    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+
+    }
+
 
     override fun onPause() {
         super.onPause()
@@ -249,7 +257,36 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
     }
 
     override fun onItemClicked(igcFile: IgcFile) {
+        if (igcFile.isDemo) {
+            AlertDialog.Builder(this.context)
+                    .setMessage(this.requireContext().getString(R.string.message_this_is_a_demo_flight))
+                    .setTitle(this.requireContext().getString(R.string.title_demo_flight))
+                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+        }
         val action = FlightListFragmentDirections.actionFirstFragmentToFlightFragment(igcFile)
         this.requireActivity().findNavController(R.id.recycler_view_igc_files).navigate(action)
     }
+
+    override fun onItemDeleted(igcFile: IgcFile) {
+        CoroutineScope(Dispatchers.IO).launch {
+            IgcSyncDatabase.getDatabase(this@FlightListFragment.requireContext().applicationContext).igcFileDao().deleteBySha(igcFile.sha256Checksum)
+            this@FlightListFragment.requireActivity().runOnUiThread {
+                this@FlightListFragment.UpdateView()
+            }
+        }
+    }
+
+    override fun onItemMarkedAsFavorite(igcFile: IgcFile) {
+        CoroutineScope(Dispatchers.IO).launch {
+            igcFile.isFavorite = !igcFile.isFavorite
+            IgcSyncDatabase.getDatabase(this@FlightListFragment.requireContext().applicationContext).igcFileDao().update(igcFile)
+            this@FlightListFragment.requireActivity().runOnUiThread {
+                this@FlightListFragment.recyclerViewIgcFiles.adapter?.notifyDataSetChanged()
+            }
+        }
+    }
+
 }

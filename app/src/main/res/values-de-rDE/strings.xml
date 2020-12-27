@@ -45,4 +45,11 @@
     <string name="label_visit_us_on_github"><![CDATA[Besuche uns auf <a href=\"https://github.com/RomanKreisel/IGCSync\">GitHub</a>]]></string>
     <string name="label_mention_logo_origin"><![CDATA[Großer Dank geht an <a href=\"https://pixabay.com/de/users/gdj-1086657/\">Gordon Johnson</a>, der uns unwissenderweise ein tolles <a href=\"https://pixabay.com/de/vectors/paragleiten-fallschirm-silhouette-4037231/\">Bild</a> als Logo zur Verfügung gestellt hat]]></string>
     <string name="alert_text_upload_started">Übertragung läuft…</string>
+    <string name="message_this_is_a_demo_flight">Dies ist eine Demo-Flug, er wird automatisch verschwinden, sobald Du Flüge aus einem Verzeichnis mit IGC-Dateien importierst.</string>
+    <string name="title_demo_flight">Demo-Flug</string>
+    <string name="menu_item_delete">Löschen</string>
+    <string name="menu_item_view">Anzeigen</string>
+    <string name="menu_item_mark_as_favorite">Als Favorit markieren</string>
+    <string name="menu_item_unmark_as_favorite">Als Favorit entfernen</string>
+    <string name="content_description_favorite_flight">Favorit</string>
 </resources>

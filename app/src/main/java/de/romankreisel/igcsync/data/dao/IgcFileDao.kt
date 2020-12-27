@@ -24,5 +24,6 @@ interface IgcFileDao {
     @Update
     fun update(flight: IgcFile)
 
-
+    @Query("DELETE FROM igcfile WHERE sha256_checksum = :checksum")
+    fun deleteBySha(checksum: String)
 }

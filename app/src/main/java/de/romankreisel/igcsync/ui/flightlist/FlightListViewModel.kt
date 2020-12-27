@@ -10,4 +10,5 @@ class FlightListViewModel : ViewModel() {
     val igcFiles = MutableLiveData<List<IgcFile>>().apply {
         value = Collections.unmodifiableList(ArrayList<IgcFile>())
     }
+
 }

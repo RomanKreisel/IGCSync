@@ -1,7 +1,7 @@
 package de.romankreisel.igcsync.ui.flightlist
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat
 
 class IgcFilesAdapter(
         private val igcFiles: List<IgcFile>,
-        val itemClickListener: OnItemClickListener
+        val itemClickListener: IgcFileItemListener
 ) :
         RecyclerView.Adapter<IgcFilesAdapter.ViewHolder>() {
 
@@ -31,6 +31,7 @@ class IgcFilesAdapter(
         viewHolder.startTimeTextView = view.findViewById<TextView>(R.id.text_start_time)
         viewHolder.durationTextView = view.findViewById<TextView>(R.id.text_duration)
         viewHolder.dhvLogoImageView = view.findViewById<ImageView>(R.id.dhv_logo)
+        viewHolder.favoriteSymbol = view.findViewById<ImageView>(R.id.favorite_symbol)
         return viewHolder
     }
 
@@ -55,47 +56,70 @@ class IgcFilesAdapter(
         } else {
             holder.dhvLogoImageView.visibility = View.VISIBLE
         }
+
+        if (igcFile.isFavorite) {
+            holder.favoriteSymbol.visibility = View.VISIBLE
+        } else {
+            holder.favoriteSymbol.visibility = View.GONE
+        }
         holder.bind(igcFile, itemClickListener)
     }
 
 
     override fun getItemCount() = this.igcFiles.count()
 
-
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnCreateContextMenuListener {
+        private lateinit var igcFileListener: IgcFileItemListener
+        private lateinit var igcFile: IgcFile
         lateinit var contentView: ConstraintLayout
         lateinit var startTimeTextView: TextView
         lateinit var filenameTextView: TextView
         lateinit var durationTextView: TextView
         lateinit var dhvLogoImageView: ImageView
+        lateinit var favoriteSymbol: ImageView
 
-        fun bind(igcFile: IgcFile, clickListener: OnItemClickListener) {
+        fun bind(igcFile: IgcFile, igcFileListener: IgcFileItemListener) {
+            this.igcFile = igcFile
+            this.igcFileListener = igcFileListener
+            itemView.setOnCreateContextMenuListener(this)
             itemView.setOnClickListener {
-                if (igcFile.isDemo) {
-                    AlertDialog.Builder(itemView.context)
-                            .setMessage("This is a demo flight, which will automatically disappear once you import your own flights from a directory with IGC files.")
-                            .setTitle("Demo Flight")
-                            .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .show()
-                }
-
-                clickListener.onItemClicked(igcFile)
+                this.igcFileListener.onItemClicked(igcFile)
             }
             itemView.setOnLongClickListener {
-                AlertDialog.Builder(itemView.context)
-                        .setMessage("TODO: add delete method")
-                        .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .show()
+                itemView.showContextMenu()
                 true
+            }
+        }
+
+        override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+            if (menu != null && v != null && v.context != null) {
+                //menu.setHeaderTitle("Header")
+                menu.add(v.context?.getString(R.string.menu_item_view)).setOnMenuItemClickListener {
+                    this.igcFileListener.onItemClicked(this.igcFile)
+                    true
+                }
+                if (igcFile.isFavorite) {
+                    menu.add(v.context?.getString(R.string.menu_item_unmark_as_favorite)).setOnMenuItemClickListener {
+                        this.igcFileListener.onItemMarkedAsFavorite(this.igcFile)
+                        true
+                    }
+                } else {
+                    menu.add(v.context?.getString(R.string.menu_item_mark_as_favorite)).setOnMenuItemClickListener {
+                        this.igcFileListener.onItemMarkedAsFavorite(this.igcFile)
+                        true
+                    }
+                }
+                menu.add(v.context?.getString(R.string.menu_item_delete)).setOnMenuItemClickListener {
+                    this.igcFileListener.onItemDeleted(this.igcFile)
+                    true
+                }.setEnabled(!igcFile.isDemo)
             }
         }
     }
 }
 
-interface OnItemClickListener {
+interface IgcFileItemListener {
     fun onItemClicked(igcFile: IgcFile)
+    fun onItemDeleted(igcFile: IgcFile)
+    fun onItemMarkedAsFavorite(igcFile: IgcFile)
 }
