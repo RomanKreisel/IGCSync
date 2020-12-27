@@ -98,16 +98,9 @@ class IgcFilesAdapter(
                     this.igcFileListener.onItemClicked(this.igcFile)
                     true
                 }
-                if (igcFile.isFavorite) {
-                    menu.add(v.context?.getString(R.string.menu_item_unmark_as_favorite)).setOnMenuItemClickListener {
-                        this.igcFileListener.onItemMarkedAsFavorite(this.igcFile)
-                        true
-                    }
-                } else {
-                    menu.add(v.context?.getString(R.string.menu_item_mark_as_favorite)).setOnMenuItemClickListener {
-                        this.igcFileListener.onItemMarkedAsFavorite(this.igcFile)
-                        true
-                    }
+                menu.add(v.context?.getString(if (igcFile.isFavorite) R.string.menu_item_unmark_as_favorite else R.string.menu_item_mark_as_favorite)).setOnMenuItemClickListener {
+                    this.igcFileListener.onItemMarkedAsFavorite(this.igcFile)
+                    true
                 }
                 menu.add(v.context?.getString(R.string.menu_item_delete)).setOnMenuItemClickListener {
                     this.igcFileListener.onItemDeleted(this.igcFile)
