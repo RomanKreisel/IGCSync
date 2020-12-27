@@ -19,6 +19,8 @@ data class IgcFile(
         @ColumnInfo(name = "start_date") var startDate: Date? = null,
         @ColumnInfo(name = "duration") var duration: Duration = Duration.ZERO,
         @ColumnInfo(name = "dhvxc_flight_url") var dhvXcFlightUrl: String? = null,
+        @ColumnInfo(name = "is_favorite") var isFavorite: Boolean = false,
+        @ColumnInfo(name = "is_demo") var isDemo: Boolean = false,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readString() ?: "",
@@ -29,7 +31,9 @@ data class IgcFile(
             parcel.readByte() != 0.toByte(),
             dateFromLong(parcel.readLong()),
             Duration.ofMillis(parcel.readLong()),
-            parcel.readString()) {
+            parcel.readString(),
+            parcel.readByte() != 0.toByte(),
+            parcel.readByte() != 0.toByte()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -42,6 +46,8 @@ data class IgcFile(
         parcel.writeLong(this.startDate?.time ?: 0)
         parcel.writeLong(this.duration.toMillis())
         parcel.writeString(dhvXcFlightUrl)
+        parcel.writeByte(if (isFavorite) 1 else 0)
+        parcel.writeByte(if (isDemo) 1 else 0)
     }
 
     override fun describeContents(): Int {

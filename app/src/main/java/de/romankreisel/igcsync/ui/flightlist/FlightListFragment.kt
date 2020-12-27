@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,11 +37,14 @@ import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.*
 
+
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
 
+    private var recyclerLayoutState: Parcelable? = null
+    private lateinit var recyclerViewLayoutManager: LinearLayoutManager
     private lateinit var progressBar: ProgressBar
     private lateinit var progressText: TextView
     private lateinit var flightListViewModel: FlightListViewModel
@@ -48,6 +52,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
     private lateinit var preferences: SharedPreferences
     private lateinit var floatingImportButton: FloatingActionButton
     private lateinit var recyclerViewIgcFiles: RecyclerView
+    private val RECYCLER_LAYOUT_STATE = "RecyclerViewLayoutState"
 
 
     override fun onCreateView(
@@ -62,8 +67,9 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
         val root = inflater.inflate(R.layout.fragment_flight_list, container, false)
         this.recyclerViewIgcFiles =
                 root.findViewById<RecyclerView>(R.id.recycler_view_igc_files)
+        this.recyclerViewLayoutManager = LinearLayoutManager(activity)
         recyclerViewIgcFiles.apply {
-            layoutManager = LinearLayoutManager(activity)
+            layoutManager = this@FlightListFragment.recyclerViewLayoutManager
             adapter = IgcFilesAdapter(
                     Collections.unmodifiableList(Collections.emptyList()),
                     this@FlightListFragment
@@ -86,10 +92,24 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
         this.progressText = root.findViewById<TextView>(R.id.progress_text)
         this.progressText.visibility = View.GONE
 
+        val layoutState = savedInstanceState?.getParcelable<Parcelable>(RECYCLER_LAYOUT_STATE)
 
-
-        this.UpdateView()
+        if (flightListViewModel.igcFiles.value.isNullOrEmpty()) {
+            this.UpdateView()
+        }
+        this.recyclerViewLayoutManager.onRestoreInstanceState(layoutState)
+        this.recyclerViewLayoutManager.onRestoreInstanceState(this.recyclerLayoutState)
         return root
+    }
+
+    override fun onPause() {
+        super.onPause()
+        this.recyclerLayoutState = this.recyclerViewLayoutManager.onSaveInstanceState()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(RECYCLER_LAYOUT_STATE, this.recyclerViewLayoutManager.onSaveInstanceState())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,7 +122,26 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, OnItemClickListener {
 
     private fun UpdateView() {
         CoroutineScope(Dispatchers.IO).launch {
-            val myIgcFiles = igcFileDao.getAll(Duration.ofSeconds(this@FlightListFragment.preferences.getInt(getString(R.string.preference_minimum_flight_duration_seconds), 60).toLong()))
+            var myIgcFiles = igcFileDao.getAll(Duration.ofSeconds(this@FlightListFragment.preferences.getInt(getString(R.string.preference_minimum_flight_duration_seconds), 60).toLong()))
+            if (myIgcFiles.isEmpty()) {
+                val igcContent = resources.openRawResource(R.raw.greifenburg).bufferedReader().readText()
+                val demoIgcFile = IgcFile(
+                        "https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039",
+                        "demoflight.igc",
+                        "b40257758c2574f7240b12ec68d87c78065a86ee6d0288845740c0831813ebdd",
+                        Date(1609081375682),
+                        igcContent,
+                        false,
+                        Date(1597929737000),
+                        Duration.ofHours(2) + Duration.ofMinutes(2) + Duration.ofSeconds(48),
+                        "https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039",
+                        false,
+                        true
+                )
+                myIgcFiles = ArrayList<IgcFile>()
+                myIgcFiles.add(demoIgcFile)
+            }
+
             requireActivity().runOnUiThread {
                 flightListViewModel.igcFiles.value = Collections.unmodifiableList(myIgcFiles)
             }

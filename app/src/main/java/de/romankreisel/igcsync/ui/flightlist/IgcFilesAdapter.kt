@@ -1,5 +1,7 @@
 package de.romankreisel.igcsync.ui.flightlist
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +26,7 @@ class IgcFilesAdapter(
                 LayoutInflater.from(parent.context).inflate(R.layout.igc_file_fragment, parent, false)
         val viewHolder = ViewHolder(view)
         viewHolder.contentView = view.findViewById<ConstraintLayout>(R.id.igc_file_layout)
+
         viewHolder.filenameTextView = view.findViewById<TextView>(R.id.text_filename)
         viewHolder.startTimeTextView = view.findViewById<TextView>(R.id.text_start_time)
         viewHolder.durationTextView = view.findViewById<TextView>(R.id.text_duration)
@@ -39,6 +42,7 @@ class IgcFilesAdapter(
                     .format(startDate)
             val myTime = SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM)
                     .format(startDate)
+            @SuppressLint("SetTextI18n")
             holder.startTimeTextView.text = "$myDate\n$myTime"
         } else {
             holder.startTimeTextView.text = ""
@@ -67,7 +71,26 @@ class IgcFilesAdapter(
 
         fun bind(igcFile: IgcFile, clickListener: OnItemClickListener) {
             itemView.setOnClickListener {
+                if (igcFile.isDemo) {
+                    AlertDialog.Builder(itemView.context)
+                            .setMessage("This is a demo flight, which will automatically disappear once you import your own flights from a directory with IGC files.")
+                            .setTitle("Demo Flight")
+                            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
+                }
+
                 clickListener.onItemClicked(igcFile)
+            }
+            itemView.setOnLongClickListener {
+                AlertDialog.Builder(itemView.context)
+                        .setMessage("TODO: add delete method")
+                        .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                true
             }
         }
     }
