@@ -41,9 +41,9 @@ class IgcFilesAdapter(
         val startDate = igcFile.startDate
         if (startDate != null) {
             val myDayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(startDate)
-            val myDate = SimpleDateFormat.getDateInstance(DateFormat.SHORT)
+            val myDate = SimpleDateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault())
                     .format(startDate)
-            val myTime = SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM)
+            val myTime = SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.getDefault())
                     .format(startDate)
             @SuppressLint("SetTextI18n")
             holder.startTimeTextView.text = "$myDayOfWeek $myDate, $myTime"
