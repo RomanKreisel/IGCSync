@@ -391,7 +391,7 @@ class FlightFragment : Fragment() {
             val gliderCertificationCategoryIds =
                     this@FlightFragment.resources.getStringArray(R.array.glider_category_id)
             val gliderCertificationCategory = this@FlightFragment.preferences.getString(
-                    getString(R.string.preference_glider_category),
+                    getString(R.string.preference_glider_certification),
                     gliderCertificationCategoryIds[0]
             )
                     ?: gliderCertificationCategoryIds[0]
