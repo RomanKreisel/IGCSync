@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:elevation="10dp"
-        app:cardCornerRadius="8dp"
+        app:cardCornerRadius="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/space_above_logo">
@@ -30,6 +30,8 @@
             android:layout_height="wrap_content"
             android:background="@color/igcsync_background"
             android:contentDescription="@string/content_description_application_logo"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
             android:src="@drawable/igcsync_foreground" />
     </androidx.cardview.widget.CardView>
 
