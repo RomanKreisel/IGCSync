@@ -13,6 +13,7 @@ import de.romankreisel.igcsync.R
 import de.romankreisel.igcsync.data.model.IgcFile
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.util.*
 
 class IgcFilesAdapter(
         private val igcFiles: List<IgcFile>,
@@ -39,12 +40,13 @@ class IgcFilesAdapter(
         val igcFile = igcFiles[position]
         val startDate = igcFile.startDate
         if (startDate != null) {
-            val myDate = SimpleDateFormat.getDateInstance(DateFormat.FULL)
+            val myDayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(startDate)
+            val myDate = SimpleDateFormat.getDateInstance(DateFormat.SHORT)
                     .format(startDate)
             val myTime = SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM)
                     .format(startDate)
             @SuppressLint("SetTextI18n")
-            holder.startTimeTextView.text = "$myDate\n$myTime"
+            holder.startTimeTextView.text = "$myDayOfWeek $myDate, $myTime"
         } else {
             holder.startTimeTextView.text = ""
         }
