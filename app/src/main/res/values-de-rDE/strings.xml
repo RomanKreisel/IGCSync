@@ -52,4 +52,9 @@
     <string name="menu_item_mark_as_favorite">Als Favorit markieren</string>
     <string name="menu_item_unmark_as_favorite">Als Favorit entfernen</string>
     <string name="content_description_favorite_flight">Favorit</string>
+    <string name="alert_title_ImportNewFlights">Neue Flüge importieren?</string>
+    <string name="alert_text_ImportNewFlights">%d neue Flüge wurden gefunden, möchtest Du sie in Dein Logbuch aufnehmen?</string>
+    <string name="alert_title_no_flights_shared">Keine Flüge geteilt</string>
+    <string name="alert_text_no_flight_detected_in_shared_content">Keine (neuen) Flüge in den geteilten Daten aus der anderen Applikation erkannt.</string>
+    <string name="alert_text_ImportNewFlight">Ein neuer Flug wurde gefunden, möchtest Du ihn in Dein Logbuch aufnehmen?</string>
 </resources>

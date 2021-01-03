@@ -70,22 +70,42 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, IgcFileItemListener {
         this.recyclerViewIgcFiles =
                 root.findViewById<RecyclerView>(R.id.recycler_view_igc_files)
         this.recyclerViewLayoutManager = LinearLayoutManager(activity)
+
+        val igcFilesAdapter = IgcFilesAdapter(
+                Collections.unmodifiableList(Collections.emptyList()),
+                this@FlightListFragment
+        )
+
         recyclerViewIgcFiles.apply {
             layoutManager = this@FlightListFragment.recyclerViewLayoutManager
-            adapter = IgcFilesAdapter(
-                    Collections.unmodifiableList(Collections.emptyList()),
-                    this@FlightListFragment
-            )
+            adapter = igcFilesAdapter
         }
 
         this.flightListViewModel = ViewModelProvider(this).get(FlightListViewModel::class.java)
+        this.flightListViewModel.igcFiles = igcFileDao.getAll(Duration.ofSeconds(this@FlightListFragment.preferences.getInt(getString(R.string.preference_minimum_flight_duration_seconds), 60).toLong()))
         this.flightListViewModel.igcFiles.observe(viewLifecycleOwner, {
             val myValue = flightListViewModel.igcFiles.value
-            if (myValue != null) {
-                recyclerViewIgcFiles.adapter = IgcFilesAdapter(myValue, this)
+
+            if (myValue.isNullOrEmpty()) {
+                val igcContent = resources.openRawResource(R.raw.greifenburg).bufferedReader().readText()
+                val demoIgcFile = IgcFile(
+                        "https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039",
+                        "demoflight.igc",
+                        "b40257758c2574f7240b12ec68d87c78065a86ee6d0288845740c0831813ebdd",
+                        Date(1609081375682),
+                        igcContent,
+                        false,
+                        Date(1597929737000),
+                        Duration.ofHours(2) + Duration.ofMinutes(2) + Duration.ofSeconds(48),
+                        "https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039",
+                        false,
+                        true
+                )
+                val demoData = ArrayList<IgcFile>()
+                demoData.add(demoIgcFile)
+                igcFilesAdapter.setData(demoData)
             } else {
-                recyclerViewIgcFiles.adapter =
-                        IgcFilesAdapter(Collections.unmodifiableList(Collections.emptyList()), this)
+                igcFilesAdapter.setData(myValue)
             }
         })
 
@@ -96,9 +116,6 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, IgcFileItemListener {
 
         val layoutState = savedInstanceState?.getParcelable<Parcelable>(RECYCLER_LAYOUT_STATE)
 
-        if (flightListViewModel.igcFiles.value.isNullOrEmpty()) {
-            this.UpdateView()
-        }
         this.recyclerViewLayoutManager.onRestoreInstanceState(layoutState)
         this.recyclerViewLayoutManager.onRestoreInstanceState(this.recyclerLayoutState)
         return root
@@ -125,34 +142,6 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, IgcFileItemListener {
         this.floatingImportButton = view.findViewById<FloatingActionButton>(R.id.fab)
         floatingImportButton.setOnClickListener {
             this.importFlights()
-        }
-    }
-
-    private fun UpdateView() {
-        CoroutineScope(Dispatchers.IO).launch {
-            var myIgcFiles = igcFileDao.getAll(Duration.ofSeconds(this@FlightListFragment.preferences.getInt(getString(R.string.preference_minimum_flight_duration_seconds), 60).toLong()))
-            if (myIgcFiles.isEmpty()) {
-                val igcContent = resources.openRawResource(R.raw.greifenburg).bufferedReader().readText()
-                val demoIgcFile = IgcFile(
-                        "https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039",
-                        "demoflight.igc",
-                        "b40257758c2574f7240b12ec68d87c78065a86ee6d0288845740c0831813ebdd",
-                        Date(1609081375682),
-                        igcContent,
-                        false,
-                        Date(1597929737000),
-                        Duration.ofHours(2) + Duration.ofMinutes(2) + Duration.ofSeconds(48),
-                        "https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039",
-                        false,
-                        true
-                )
-                myIgcFiles = ArrayList<IgcFile>()
-                myIgcFiles.add(demoIgcFile)
-            }
-
-            requireActivity().runOnUiThread {
-                flightListViewModel.igcFiles.value = Collections.unmodifiableList(myIgcFiles)
-            }
         }
     }
 
@@ -221,7 +210,6 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, IgcFileItemListener {
                 this.progressBar.progress = 100
                 this.progressBar.isIndeterminate = false
                 this.progressText.text = text
-                this.UpdateView()
                 Handler(Looper.getMainLooper()).postDelayed({
                     this.floatingImportButton.isEnabled = true
                     this.progressBar.visibility = View.GONE
@@ -273,9 +261,6 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, IgcFileItemListener {
     override fun onItemDeleted(igcFile: IgcFile) {
         CoroutineScope(Dispatchers.IO).launch {
             IgcSyncDatabase.getDatabase(this@FlightListFragment.requireContext().applicationContext).igcFileDao().deleteBySha(igcFile.sha256Checksum)
-            this@FlightListFragment.requireActivity().runOnUiThread {
-                this@FlightListFragment.UpdateView()
-            }
         }
     }
 
@@ -283,9 +268,6 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, IgcFileItemListener {
         CoroutineScope(Dispatchers.IO).launch {
             igcFile.isFavorite = !igcFile.isFavorite
             IgcSyncDatabase.getDatabase(this@FlightListFragment.requireContext().applicationContext).igcFileDao().update(igcFile)
-            this@FlightListFragment.requireActivity().runOnUiThread {
-                this@FlightListFragment.recyclerViewIgcFiles.adapter?.notifyDataSetChanged()
-            }
         }
     }
 

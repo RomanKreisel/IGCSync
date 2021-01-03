@@ -81,4 +81,9 @@
     <string name="menu_item_mark_as_favorite">Mark as favorite</string>
     <string name="menu_item_unmark_as_favorite">Unmark as favorite</string>
     <string name="content_description_favorite_flight">Favorite Flight</string>
+    <string name="alert_title_ImportNewFlights">Import new flights?</string>
+    <string name="alert_text_ImportNewFlights">%d new flights where found, do you want to import them into your logbook?</string>
+    <string name="alert_title_no_flights_shared">No flights shared</string>
+    <string name="alert_text_no_flight_detected_in_shared_content">No (new) flights detected in the content shared by the other application</string>
+    <string name="alert_text_ImportNewFlight">One new flight was found, do you want to import it into your logbook?</string>
 </resources>

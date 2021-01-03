@@ -16,11 +16,16 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class IgcFilesAdapter(
-        private val igcFiles: List<IgcFile>,
+        igcFiles: List<IgcFile>,
         val itemClickListener: IgcFileItemListener
 ) :
         RecyclerView.Adapter<IgcFilesAdapter.ViewHolder>() {
 
+    private val igcFiles: ArrayList<IgcFile>
+
+    init {
+        this.igcFiles = ArrayList<IgcFile>(igcFiles)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
@@ -34,6 +39,12 @@ class IgcFilesAdapter(
         viewHolder.dhvLogoImageView = view.findViewById<ImageView>(R.id.dhv_logo)
         viewHolder.favoriteSymbol = view.findViewById<ImageView>(R.id.favorite_symbol)
         return viewHolder
+    }
+
+    fun setData(igcFiles: List<IgcFile>) {
+        this.igcFiles.clear()
+        this.igcFiles.addAll(igcFiles)
+        this.notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
