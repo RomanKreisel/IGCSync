@@ -1,5 +1,6 @@
 package de.romankreisel.igcsync.ui.settings
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -16,12 +17,18 @@ import androidx.core.widget.addTextChangedListener
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import de.romankreisel.igcsync.MainActivity
 import de.romankreisel.igcsync.R
+import de.romankreisel.igcsync.data.IgcSyncDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener,
     AdapterView.OnItemSelectedListener {
+    companion object {
+        const val REQUEST_CODE_IGC_DATA_DIRECTORY = 1000
+    }
 
     private lateinit var gliderCertificationSpinner: Spinner
     private lateinit var gliderManufacturerText: AutoCompleteTextView
@@ -77,9 +84,9 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         val selectDirectoryButton =
             root.findViewById<Button>(R.id.button_select_data_directory)
         selectDirectoryButton.setOnClickListener {
-            requireActivity().startActivityForResult(
+            this.startActivityForResult(
                 Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
-                MainActivity.REQUEST_CODE_IGC_DATA_DIRECTORY
+                REQUEST_CODE_IGC_DATA_DIRECTORY
             )
         }
         settingsViewModel.selectDirectoryButtonText.observe(viewLifecycleOwner, {
@@ -219,6 +226,33 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
         preferences.registerOnSharedPreferenceChangeListener(this)
         this.updateViewModel(preferences)
         return root
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE_IGC_DATA_DIRECTORY) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                val uri = data.data
+                if (uri != null) {
+                    this.requireActivity().contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                    preferences.edit()
+                        .putString(
+                            getString(R.string.preference_igc_directory_url),
+                            uri.toString()
+                        )
+                        .apply()
+                }
+            }
+            CoroutineScope(Dispatchers.IO).launch {
+                IgcSyncDatabase.getDatabase(this@SettingsFragment.requireContext())
+                    .alreadyImportedUrlDao()
+                    .deleteAll()
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
     }
 
     override fun onPause() {

@@ -1,4 +1,4 @@
-package de.romankreisel.igcsync.ui.flightlist.igcfile
+package de.romankreisel.igcsync.ui.flightlist.flight
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,21 +8,21 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import de.romankreisel.igcsync.R
 
-class IgcFileFragment : Fragment() {
-    private lateinit var viewModel: IgcFileViewModel
+class FlightFragment : Fragment() {
+    private lateinit var viewModel: FlightViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        
+
 
         return inflater.inflate(R.layout.igc_file_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(IgcFileViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(FlightViewModel::class.java)
     }
 
 }

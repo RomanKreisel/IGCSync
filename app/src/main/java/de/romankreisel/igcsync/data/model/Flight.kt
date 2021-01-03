@@ -9,14 +9,12 @@ import java.time.Duration
 import java.util.*
 
 @Entity
-data class IgcFile(
-        @PrimaryKey var url: String,
+data class Flight(
+        @PrimaryKey @ColumnInfo(name = "sha256_checksum", index = true) var sha256Checksum: String,
         @ColumnInfo(name = "filename") var filename: String,
-        @ColumnInfo(name = "sha256_checksum", index = true) var sha256Checksum: String,
         @ColumnInfo(name = "import_date") var import_date: Date,
-        @ColumnInfo var content: String? = null,
-        @ColumnInfo(name = "is_duplicate") var isDuplicate: Boolean = false,
-        @ColumnInfo(name = "start_date") var startDate: Date? = null,
+        @ColumnInfo(name = "content") var content: String,
+        @ColumnInfo(name = "start_date") var startDate: Date,
         @ColumnInfo(name = "duration") var duration: Duration = Duration.ZERO,
         @ColumnInfo(name = "dhvxc_flight_url") var dhvXcFlightUrl: String? = null,
         @ColumnInfo(name = "is_favorite") var isFavorite: Boolean = false,
@@ -25,10 +23,8 @@ data class IgcFile(
     constructor(parcel: Parcel) : this(
             parcel.readString() ?: "",
             parcel.readString() ?: "",
-            parcel.readString() ?: "",
             dateFromLong(parcel.readLong()),
-            parcel.readString(),
-            parcel.readByte() != 0.toByte(),
+            parcel.readString() ?: "",
             dateFromLong(parcel.readLong()),
             Duration.ofMillis(parcel.readLong()),
             parcel.readString(),
@@ -37,13 +33,11 @@ data class IgcFile(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(url)
-        parcel.writeString(filename)
         parcel.writeString(sha256Checksum)
+        parcel.writeString(filename)
         parcel.writeLong(this.import_date.time)
         parcel.writeString(content)
-        parcel.writeByte(if (isDuplicate) 1 else 0)
-        parcel.writeLong(this.startDate?.time ?: 0)
+        parcel.writeLong(this.startDate.time)
         parcel.writeLong(this.duration.toMillis())
         parcel.writeString(dhvXcFlightUrl)
         parcel.writeByte(if (isFavorite) 1 else 0)
@@ -54,12 +48,12 @@ data class IgcFile(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<IgcFile> {
-        override fun createFromParcel(parcel: Parcel): IgcFile {
-            return IgcFile(parcel)
+    companion object CREATOR : Parcelable.Creator<Flight> {
+        override fun createFromParcel(parcel: Parcel): Flight {
+            return Flight(parcel)
         }
 
-        override fun newArray(size: Int): Array<IgcFile?> {
+        override fun newArray(size: Int): Array<Flight?> {
             return arrayOfNulls(size)
         }
 

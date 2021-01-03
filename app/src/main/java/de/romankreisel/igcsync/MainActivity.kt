@@ -1,6 +1,5 @@
 package de.romankreisel.igcsync
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -8,6 +7,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -15,29 +15,26 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.findNavController
-import de.romankreisel.igcsync.data.IgcFileDaoHelper
-import de.romankreisel.igcsync.data.model.IgcFile
+import de.romankreisel.igcsync.data.FlightImportHelper
+import de.romankreisel.igcsync.data.igc.IgcException
+import de.romankreisel.igcsync.data.model.Flight
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.nio.charset.Charset
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
     private lateinit var preferences: SharedPreferences
     private lateinit var navController: NavController
     private lateinit var navHostFragment: Fragment
-    private lateinit var igcFileDaoHelper: IgcFileDaoHelper
-
-    companion object {
-        const val REQUEST_CODE_IGC_DATA_DIRECTORY = 1000
-    }
-
+    private lateinit var flightImportHelper: FlightImportHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        this.igcFileDaoHelper = IgcFileDaoHelper(this.applicationContext)
+        this.flightImportHelper = FlightImportHelper(this.applicationContext)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         this.preferences = this.getPreferences(Context.MODE_PRIVATE)
@@ -51,23 +48,25 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             when {
                 myIntent.action == Intent.ACTION_SEND -> {
                     val clipData = myIntent.clipData
-                    val igcFiles = HashMap<String, String>()
+                    val flights = HashMap<String, String>()
                     if (clipData != null) {
                         for (i in 0 until clipData.itemCount) {
                             val myData = clipData.getItemAt(i)
                             val uri = myData.uri
-                            val lines = contentResolver.openInputStream(uri)?.bufferedReader(Charset.forName("UTF-8"))?.readText()
+                            val lines = contentResolver.openInputStream(uri)
+                                ?.bufferedReader(Charset.forName("UTF-8"))?.readText()
                             if (!lines.isNullOrBlank()) {
-                                igcFiles.put(uri.toString(), lines)
+                                flights.put(uri.toString(), lines)
                             }
                         }
                     }
-                    this.importFlights(igcFiles)
+                    this.importFlights(flights)
                 }
                 myIntent.action == Intent.ACTION_VIEW -> {
                     val intent = intent
                     val uri = intent.data
-                    val lines = contentResolver.openInputStream(uri!!)?.bufferedReader(Charset.forName("UTF-8"))?.readText()
+                    val lines = contentResolver.openInputStream(uri!!)
+                        ?.bufferedReader(Charset.forName("UTF-8"))?.readText()
                     if (lines != null) {
                         val flights = HashMap<String, String>()
                         flights.set(uri.toString(), lines)
@@ -78,81 +77,78 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
     }
 
-    fun importFlights(flights: Map<String, String>) {
+    fun importFlights(flightsUriAndContent: Map<String, String>) {
         val now = Date(System.currentTimeMillis())
-        var igcFiles: List<IgcFile> = Collections.emptyList()
+        val checksums = HashSet<String>()
+        val flightsForImport = ArrayList<Flight>()
         CoroutineScope(Dispatchers.IO).launch {
-            val allIgcFiles = ArrayList<IgcFile>()
-            flights.forEach {
+            flightsUriAndContent.forEach {
                 val uri = Uri.parse(it.key)
                 val cursor = contentResolver.query(uri!!, null, null, null, null)
                 var filename = uri.lastPathSegment ?: ""
                 try {
                     if (cursor != null && cursor.moveToFirst()) {
-                        filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                        filename =
+                            cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                     }
                 } finally {
                     cursor?.close()
                 }
-                if (!this@MainActivity.igcFileDaoHelper.flightUrlAlreadyKnown(uri)) {
-                    allIgcFiles.add(this@MainActivity.igcFileDaoHelper.createIgcFile(uri, filename, it.value, now))
-                    igcFiles = this@MainActivity.igcFileDaoHelper.filterInvalidIgcFiles(allIgcFiles)
-                    this@MainActivity.igcFileDaoHelper.markDuplicateIgcFiles(igcFiles)
+                if (!this@MainActivity.flightImportHelper.flightUrlAlreadyKnown(uri)) {
+                    try {
+                        val flight = this@MainActivity.flightImportHelper.createFlight(
+                            filename,
+                            it.value,
+                            now
+                        )
+                        if (!this@MainActivity.flightImportHelper.alreadyKnown(
+                                flight,
+                                checksums
+                            ) && !this@MainActivity.flightImportHelper.flightAboveMinimumDuration(
+                                flight
+                            )
+                        ) {
+                            checksums.add(flight.sha256Checksum)
+                            flightsForImport.add(flight)
+                        }
+                    } catch (e: IgcException) {
+                        Log.e(this@MainActivity::class.qualifiedName, "Error reading IGC", e)
+                    }
                 }
             }
             this@MainActivity.runOnUiThread {
-                if (igcFiles.count() <= 0) {
+                if (flightsForImport.count() <= 0) {
                     AlertDialog.Builder(this@MainActivity)
-                            .setTitle(getString(R.string.alert_title_no_flights_shared))
-                            .setMessage(getString(R.string.alert_text_no_flight_detected_in_shared_content))
-                            .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .show()
+                        .setTitle(getString(R.string.alert_title_no_flights_shared))
+                        .setMessage(getString(R.string.alert_text_no_flight_detected_in_shared_content))
+                        .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
                 } else {
-                    var text = getString(R.string.alert_text_ImportNewFlights, igcFiles.count())
-                    if (igcFiles.count() == 1) {
+                    var text =
+                        getString(R.string.alert_text_ImportNewFlights, flightsForImport.count())
+                    if (flightsForImport.count() == 1) {
                         text = getString(R.string.alert_text_ImportNewFlight)
                     }
                     AlertDialog.Builder(this@MainActivity)
-                            .setTitle(getString(R.string.alert_title_ImportNewFlights))
-                            .setMessage(text)
-                            .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    this@MainActivity.igcFileDaoHelper.insertAll(*igcFiles.toTypedArray())
-                                }
-                                dialog.dismiss()
+                        .setTitle(getString(R.string.alert_title_ImportNewFlights))
+                        .setMessage(text)
+                        .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                            CoroutineScope(Dispatchers.IO).launch {
+                                this@MainActivity.flightImportHelper.insertAll(*flightsForImport.toTypedArray())
                             }
-                            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .show()
+                            dialog.dismiss()
+                        }
+                        .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
                 }
             }
 
         }
 
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_IGC_DATA_DIRECTORY) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                val uri = data.data
-                if (uri != null) {
-                    this.contentResolver.takePersistableUriPermission(
-                            uri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                    preferences.edit()
-                            .putString(
-                                    getString(R.string.preference_igc_directory_url),
-                                    uri.toString()
-                            )
-                            .apply()
-                }
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -184,9 +180,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
 
     override fun onDestinationChanged(
-            controller: NavController,
-            destination: NavDestination,
-            arguments: Bundle?
+        controller: NavController,
+        destination: NavDestination,
+        arguments: Bundle?
     ) {
         if (destination.id == R.id.FirstFragment) {
             getSupportActionBar()?.setDisplayHomeAsUpEnabled(false)

@@ -1,0 +1,126 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "94ffcea7b8761e3c98fc9fff74a7c502",
+    "entities": [
+      {
+        "tableName": "Flight",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sha256_checksum` TEXT NOT NULL, `filename` TEXT NOT NULL, `import_date` INTEGER NOT NULL, `content` TEXT NOT NULL, `start_date` INTEGER NOT NULL, `duration` INTEGER NOT NULL, `dhvxc_flight_url` TEXT, `is_favorite` INTEGER NOT NULL, `is_demo` INTEGER NOT NULL, PRIMARY KEY(`sha256_checksum`))",
+        "fields": [
+          {
+            "fieldPath": "sha256Checksum",
+            "columnName": "sha256_checksum",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "filename",
+            "columnName": "filename",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "import_date",
+            "columnName": "import_date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startDate",
+            "columnName": "start_date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "duration",
+            "columnName": "duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dhvXcFlightUrl",
+            "columnName": "dhvxc_flight_url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isFavorite",
+            "columnName": "is_favorite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDemo",
+            "columnName": "is_demo",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "sha256_checksum"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_Flight_sha256_checksum",
+            "unique": false,
+            "columnNames": [
+              "sha256_checksum"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Flight_sha256_checksum` ON `${TABLE_NAME}` (`sha256_checksum`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "AlreadyImportedUrl",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`url` TEXT NOT NULL, `sha256_checksum` TEXT NOT NULL, PRIMARY KEY(`url`))",
+        "fields": [
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sha256Checksum",
+            "columnName": "sha256_checksum",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "url"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_AlreadyImportedUrl_sha256_checksum",
+            "unique": false,
+            "columnNames": [
+              "sha256_checksum"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_AlreadyImportedUrl_sha256_checksum` ON `${TABLE_NAME}` (`sha256_checksum`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '94ffcea7b8761e3c98fc9fff74a7c502')"
+    ]
+  }
+}

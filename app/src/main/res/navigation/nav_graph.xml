@@ -24,7 +24,7 @@
         tools:layout="@layout/fragment_flight">
         <argument
             android:name="flight"
-            app:argType="de.romankreisel.igcsync.data.model.IgcFile" />
+            app:argType="de.romankreisel.igcsync.data.model.Flight" />
 
     </fragment>
     <fragment
