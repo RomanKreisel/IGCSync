@@ -1,5 +1,5 @@
 # IGCSync
-Android App to upload your flight tracks to the german DHV-XC server
+[An Android App](https://play.google.com/store/apps/details?id=de.romankreisel.igcsync) to upload your flight tracks to the german DHV-XC server
 ![Intro](https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/Vorstellungsbild.png "Intro")
 
 IGC Sync erlaubt das importieren von Flügen, z.B. mittels USB OTG Kabel auch vom Vario direkt auf's Handy.
