@@ -1,37 +1,19 @@
-## Welcome to GitHub Pages
+# IGCSync
+[An Android App](https://play.google.com/store/apps/details?id=de.romankreisel.igcsync) to upload your flight tracks to the german DHV-XC server
+![Intro](https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/Vorstellungsbild.png "Intro")
 
-You can use the [editor on GitHub](https://github.com/RomanKreisel/IGCSync/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+IGC Sync erlaubt das importieren von Flügen, z.B. mittels USB OTG Kabel auch vom Vario direkt auf's Handy.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Die Anforderungen dafür sind:
+- Das Vario muss als USB-Stick funktionieren
+- Das Smartphone muss USB OTG (On-The-Go) unterstützen
+- Smartphone und Vario müssen über ein USB OTG-Kabel miteinander verbunden werden
 
-### Markdown
+Alternativ können die Flüge auch importiert werden, sofern sie anderweitig auf's Smartphone kopiert werden.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Die Flüge können anschließend betrachtet und für die Wettbewerbe des Deutschen Hängegleiterverbands (DHV) eingereicht werden.
 
-```markdown
-Syntax highlighted code block
+## Screenshots
+<img src="https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/ScreenshotsSmartphone/Screenshot_20201227_224918.png" alt="Smartphone Tracklist" height="600"/> <img src="https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/ScreenshotsSmartphone/Screenshot_20201227_224923.png" alt="Smartphone Tracklist" height="600"/> <img src="https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/ScreenshotsTablet/Screenshot_20201227_225134.png" alt="Tablet Track" height="600"/>
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/RomanKreisel/IGCSync/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+[Video: IGCSync in Aktion](https://www.youtube.com/watch?v=DsxOZnudhiY)
