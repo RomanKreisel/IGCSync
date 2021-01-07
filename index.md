@@ -16,4 +16,4 @@ Die Flüge können anschließend betrachtet und für die Wettbewerbe des Deutsch
 ## Screenshots
 <img src="https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/ScreenshotsSmartphone/Screenshot_20201227_224918.png" alt="Smartphone Tracklist" height="600"/> <img src="https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/ScreenshotsSmartphone/Screenshot_20201227_224923.png" alt="Smartphone Tracklist" height="600"/> <img src="https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/ScreenshotsTablet/Screenshot_20201227_225134.png" alt="Tablet Track" height="600"/>
 
-[Video: IGCSync in Aktion](https://www.youtube.com/watch?v=DsxOZnudhiY)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/DsxOZnudhiY" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
