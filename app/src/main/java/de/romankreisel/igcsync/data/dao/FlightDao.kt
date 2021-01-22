@@ -8,7 +8,10 @@ import java.time.Duration
 @Dao
 interface FlightDao {
     @Query("SELECT * FROM flight where duration >= :minimumDuration  order by start_date desc")
-    fun getAll(minimumDuration: Duration? = null): LiveData<List<Flight>>
+    fun getAllAsLivedata(minimumDuration: Duration? = null): LiveData<List<Flight>>
+
+    @Query("SELECT * FROM flight where duration >= :minimumDuration  order by start_date desc")
+    suspend fun getAll(minimumDuration: Duration? = null): List<Flight>
 
     @Query("SELECT * FROM flight WHERE sha256_checksum=:checksum")
     suspend fun findBySha256Checksum(checksum: String): List<Flight>

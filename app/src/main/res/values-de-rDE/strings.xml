@@ -57,4 +57,5 @@
     <string name="alert_title_no_flights_shared">Keine Flüge geteilt</string>
     <string name="alert_text_no_flight_detected_in_shared_content">Keine (neuen) Flüge in den geteilten Daten aus der anderen Applikation erkannt.</string>
     <string name="alert_text_ImportNewFlight">Ein neuer Flug wurde gefunden, möchtest Du ihn in Dein Logbuch aufnehmen?</string>
+    <string name="inform_about_reparse_igc">Aktualisiere Datenbank</string>
 </resources>

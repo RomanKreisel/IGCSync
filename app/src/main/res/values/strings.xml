@@ -11,6 +11,7 @@
     <string name="preference_glider_size" translatable="false">glider_size</string>
     <string name="preference_map_type" translatable="false">map_type</string>
     <string name="preference_minimum_flight_duration_seconds" translatable="false">minimum_flight_duration_seconds</string>
+    <string name="preference_reparse_igc" translatable="false">ReparseIGCs</string>
 
     <string name="default_leonardo_submit_flight_url" translatable="false">http://www.xc.dhv.de/xc/modules/leonardo/flight_submit.php</string>
     <string name="default_minimum_flight_duration_seconds" translatable="false">60</string>
@@ -50,7 +51,7 @@
     <string name="button_description_import_new_flights">Import new flights</string>
     <string name="toast_scan_for_new_flights">Searching for new flights…</string>
     <string name="label_filename">Filename:</string>
-    <string name="label_flight_start_time">Start:</string>
+    <string name="label_flight_start_time">Take-off:</string>
     <string name="label_flight_duration">Duration:</string>
     <string name="content_description_flight_on_dhvxc">Flight available on DHV-XC</string>
     <string name="button_upload_tandem" translatable="false">Tandem Cup</string>
@@ -62,7 +63,7 @@
     <string name="button_view_flight">View</string>
     <string name="button_dhv_xc_content_description" translatable="false">DHV XC</string>
     <string name="marker_landing">Landing</string>
-    <string name="marker_start">Start</string>
+    <string name="marker_start">Take-off</string>
     <string name="button_map_mode_content_description">Map mode</string>
     <string name="alert_text_error_during_upload">An error occurred during upload, please try again later.</string>
     <string name="label_offer_upload_to_tandem_cup">Offer upload to tandem cup</string>
@@ -86,4 +87,5 @@
     <string name="alert_title_no_flights_shared">No flights shared</string>
     <string name="alert_text_no_flight_detected_in_shared_content">No (new) flights detected in the content shared by the other application</string>
     <string name="alert_text_ImportNewFlight">One new flight was found, do you want to import it into your logbook?</string>
+    <string name="inform_about_reparse_igc">Updating database</string>
 </resources>
