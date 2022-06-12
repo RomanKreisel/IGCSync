@@ -105,7 +105,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
                     igcContent,
                     Date(1597929737000),
                     Duration.ofHours(2) + Duration.ofMinutes(2) + Duration.ofSeconds(48),
-                    "https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039",
+                    "https://dhv-xc.de/flight/1298039",
                     false,
                     true
                 )

@@ -13,7 +13,10 @@
     <string name="preference_minimum_flight_duration_seconds" translatable="false">minimum_flight_duration_seconds</string>
     <string name="preference_reparse_igc" translatable="false">ReparseIGCs</string>
 
-    <string name="default_leonardo_submit_flight_url" translatable="false">http://www.xc.dhv.de/xc/modules/leonardo/flight_submit.php</string>
+    <string name="default_leonardo_submit_flight_url" translatable="false">http://xc.dhv.de/xc/modules/leonardo/flight_submit.php</string>
+    <string name="default_dhvxc_upload_flights_url" translatable="true">https://en.dhv-xc.de/api/v1/flights</string> <!-- There is a special URL with german messages, for this reason this is translateable-->
+    <string name="regex_flight_id_parser" translatable="false">.*ID (?&lt;flightId&gt;\\d+).*</string>
+
     <string name="default_minimum_flight_duration_seconds" translatable="false">60</string>
 
 
@@ -30,10 +33,10 @@
     <string name="label_scanning_progress">Importing flights (%1$d%%)</string>
     <string name="headline_dhv_xc" translatable="false">DHV-XC</string>
     <string name="headline_general">General settings</string>
-    <string name="label_username">Username</string>
+    <string name="label_username">Upload username</string>
     <string name="hint_username_john_doe">JohnDoe</string>
-    <string name="label_password">Password</string>
-    <string name="hint_password">YourSecretPassword</string>
+    <string name="label_password">Upload password</string>
+    <string name="hint_password">YourSecretUPLOADPassword</string>
     <string name="headline_pilot_settings">Pilot settings</string>
     <string name="label_glider_category">Glider Category</string>
     <string name="label_start_type">Start type</string>
@@ -55,7 +58,7 @@
     <string name="label_flight_duration">Duration:</string>
     <string name="content_description_flight_on_dhvxc">Flight available on DHV-XC</string>
     <string name="button_upload_tandem" translatable="false">Tandem Cup</string>
-    <string name="button_upload_fun_cup" translatable="false">Fun Cup</string>
+    <string name="button_upload_flight" translatable="false">Upload</string>
     <string name="button_upload_standard" translatable="false">Standard Cup</string>
     <string name="button_upload_sport" translatable="false">Sport Cup</string>
     <string name="button_upload_performance" translatable="false">Performance Cup</string>
@@ -66,6 +69,7 @@
     <string name="marker_start">Take-off</string>
     <string name="button_map_mode_content_description">Map mode</string>
     <string name="alert_text_error_during_upload">An error occurred during upload, please try again later.</string>
+    <string name="alert_text_auth_error_during_upload">It looks like your credentials were incorrect, please ensure to use your DHV-XC UPLOAD username &amp; password, not the username &amp; password for the portal itself</string>
     <string name="label_offer_upload_to_tandem_cup">Offer upload to tandem cup</string>
     <string name="preference_offer_upload_tandem_cup" translatable="false">offer_upload_tandem_cup</string>
     <string name="label_upload_into">Upload into</string>

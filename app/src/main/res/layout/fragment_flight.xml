@@ -66,77 +66,12 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView_upload_into"
+        <Button
+            android:id="@+id/button_upload_to_dhvxc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_upload_into" />
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/layout_upload_buttons"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/customborder"
-            app:flexWrap="wrap"
-            app:justifyContent="center">
-
-            <Button
-                android:id="@+id/button_upload_fun_cup_pg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/button_upload_fun_cup" />
-
-            <Button
-                android:id="@+id/button_upload_fun_cup_hg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/button_upload_fun_cup" />
-
-            <Button
-                android:id="@+id/button_upload_standard_pg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/button_upload_standard" />
-
-            <Button
-                android:id="@+id/button_upload_standard_hg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/button_upload_standard" />
-
-            <Button
-                android:id="@+id/button_upload_sport_pg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/button_upload_sport" />
-
-            <Button
-                android:id="@+id/button_upload_performance_pg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/button_upload_performance" />
-
-            <Button
-                android:id="@+id/button_upload_tandem_pg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/button_upload_tandem" />
-
-            <Button
-                android:id="@+id/button_upload_flightbook"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:text="@string/button_upload_flightbook" />
-
-        </com.google.android.flexbox.FlexboxLayout>
+            android:layout_margin="3dp"
+            android:text="@string/button_upload_flight" />
 
         <Button
             android:id="@+id/button_view_in_dhvxc"
@@ -147,8 +82,8 @@
 
         <ImageButton
             android:id="@+id/button_upload_dhv_xc"
-            android:layout_width="85dp"
-            android:layout_height="45dp"
+            android:layout_width="157dp"
+            android:layout_height="50dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"

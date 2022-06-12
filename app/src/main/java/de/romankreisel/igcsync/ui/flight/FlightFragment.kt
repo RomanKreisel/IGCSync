@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
-import com.google.android.flexbox.FlexboxLayout
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -32,6 +31,8 @@ import de.romankreisel.igcsync.igc.IgcData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.IOException
 import java.net.URLEncoder
 import java.text.DateFormat
@@ -40,18 +41,9 @@ import java.util.regex.Pattern
 
 
 class FlightFragment : Fragment() {
-    private lateinit var layout_upload_buttons: FlexboxLayout
-    private lateinit var text_upload_into: TextView
-    private lateinit var button_upload_flightbook: Button
-    private lateinit var button_upload_performance_pg: Button
-    private lateinit var button_upload_sport_pg: Button
-    private lateinit var button_upload_standard_hg: Button
-    private lateinit var button_upload_fun_hg: Button
     private lateinit var button_upload_fun_pg: Button
-    private lateinit var button_upload_tandem_pg: Button
     private lateinit var progressBar: ProgressBar
     private var googleMap: GoogleMap? = null
-    private lateinit var button_upload_standard_pg: Button
     private lateinit var button_view_in_dhvxc: Button
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var igcData: IgcData
@@ -159,64 +151,26 @@ class FlightFragment : Fragment() {
         }
 
         this.button_upload_fun_pg =
-            this.requireView().findViewById<Button>(R.id.button_upload_fun_cup_pg)!!
+            this.requireView().findViewById(R.id.button_upload_to_dhvxc)!!
         this.button_upload_fun_pg.setOnClickListener {
-            this.upload(4)
+            this.upload()
         }
-
-        this.button_upload_fun_hg =
-            this.requireView().findViewById<Button>(R.id.button_upload_fun_cup_hg)!!
-        this.button_upload_fun_hg.setOnClickListener {
-            this.upload(1)
-        }
-
-        this.button_upload_standard_pg =
-            this.requireView().findViewById<Button>(R.id.button_upload_standard_pg)!!
-        this.button_upload_standard_pg.setOnClickListener {
-            this.upload(5)
-        }
-
-        this.button_upload_standard_hg =
-            this.requireView().findViewById<Button>(R.id.button_upload_standard_hg)!!
-        this.button_upload_standard_hg.setOnClickListener {
-            this.upload(2)
-        }
-
-        this.button_upload_sport_pg =
-            this.requireView().findViewById<Button>(R.id.button_upload_sport_pg)!!
-        this.button_upload_sport_pg.setOnClickListener {
-            this.upload(1)
-        }
-
-        this.button_upload_performance_pg =
-            this.requireView().findViewById<Button>(R.id.button_upload_performance_pg)!!
-        this.button_upload_performance_pg.setOnClickListener {
-            this.upload(2)
-        }
-
-        this.button_upload_tandem_pg =
-            this.requireView().findViewById<Button>(R.id.button_upload_tandem_pg)!!
-        this.button_upload_tandem_pg.setOnClickListener {
-            this.upload(3)
-        }
-
-        this.button_upload_flightbook =
-            this.requireView().findViewById<Button>(R.id.button_upload_flightbook)!!
-        this.button_upload_flightbook.setOnClickListener {
-            this.upload(6)
-        }
-
-        this.text_upload_into = this.requireView().findViewById<TextView>(R.id.textView_upload_into)
-        this.layout_upload_buttons =
-            this.requireView().findViewById<FlexboxLayout>(R.id.layout_upload_buttons)
-
 
         this.button_view_in_dhvxc =
-            this.requireView().findViewById<Button>(R.id.button_view_in_dhvxc)!!
+            this.requireView().findViewById(R.id.button_view_in_dhvxc)!!
         this.button_view_in_dhvxc.setOnClickListener {
             this.toggleVisibilityForAllDhvXcButtons()
-            val myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(args.flight.dhvXcFlightUrl))
-            startActivity(myIntent)
+            //example of an "old" url: https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039
+            val matcher = Pattern.compile(".*(flightId=\\d+).*")
+                .matcher(args.flight.dhvXcFlightUrl!!)
+            if (args.flight.dhvXcFlightUrl!!.contains("leonardo") && matcher.matches()) {
+                val flightId = matcher.group(1)
+                val flightUrl = "https://dhv-xc.de/flight/" + flightId
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(flightUrl)))
+            } else {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(args.flight.dhvXcFlightUrl)))
+            }
+
         }
 
         this.toggleVisibilityForAllDhvXcButtons()
@@ -242,66 +196,18 @@ class FlightFragment : Fragment() {
             visibility = View.VISIBLE
         }
 
-        this.layout_upload_buttons.visibility = visibility
-
         this.button_view_in_dhvxc.visibility =
             if (args.flight.dhvXcFlightUrl.isNullOrBlank()) View.GONE else visibility
 
-        val gliderCategory = this@FlightFragment.preferences.getString(
-            getString(R.string.preference_glider_category),
-            "1"
-        ) ?: "1"
-
-        val gliderCertification = this@FlightFragment.preferences.getString(
-            getString(R.string.preference_glider_certification),
-            "1"
-        ) ?: "1"
-
         //Before we check for all conditions, we disable all buttons first:
         this.button_upload_fun_pg.visibility = View.GONE
-        this.button_upload_fun_hg.visibility = View.GONE
-        this.button_upload_tandem_pg.visibility = View.GONE
-        this.button_upload_standard_pg.visibility = View.GONE
-        this.button_upload_standard_hg.visibility = View.GONE
-        this.button_upload_sport_pg.visibility = View.GONE
-        this.button_upload_performance_pg.visibility = View.GONE
-        this.button_upload_flightbook.visibility = View.GONE
-        this.text_upload_into.visibility = View.GONE
         if (args.flight.isDemo) {
             return
         }
-        this.text_upload_into.visibility = visibility
-        this.button_upload_flightbook.visibility = visibility
-        if (gliderCategory == "1" /*PG*/) {
-            if (gliderCertification == "1" /*LTF 1*/ || gliderCertification == "32" /*EN/LTF A*/) {
-                this.button_upload_fun_pg.visibility = visibility
-            }
-            if (gliderCertification == "1" /*LTF 1*/ || gliderCertification == "32" /*EN/LTF A*/ || gliderCertification == "2" /*LTF 1-2*/ || gliderCertification == "64" /*EN/LTF B*/) {
-                this.button_upload_standard_pg.visibility = visibility
-            }
-            if (gliderCertification == "4" /*LTF 2*/ || gliderCertification == "128" /*EN/LTF C*/) {
-                this.button_upload_sport_pg.visibility = visibility
-            }
-            if (gliderCertification == "8" /*LTF 2-3*/ || gliderCertification == "16" /*LTF 3*/ || gliderCertification == "256" /*EN/LTF D*/) {
-                this.button_upload_performance_pg.visibility = visibility
-            }
-            val offerTandem = preferences.getBoolean(
-                getString(R.string.preference_offer_upload_tandem_cup),
-                false
-            )
-            if (offerTandem) {
-                this.button_upload_tandem_pg.visibility = visibility
-            }
-        } else if (gliderCategory == "2" /*Flex Wing*/) {
-            this.button_upload_standard_hg.visibility = visibility
-            this.button_upload_fun_hg.visibility = visibility
-        } else if (gliderCategory == "4" /*Rigid Wing*/) {
-            this.button_upload_standard_hg.visibility = visibility
-        }
-
+        this.button_upload_fun_pg.visibility = visibility
     }
 
-    private fun upload(category: Int) {
+    private fun upload() {
         this.toggleVisibilityForAllDhvXcButtons()
         this.progressBar.visibility = View.VISIBLE
         this.progressBar.isIndeterminate = true
@@ -318,84 +224,12 @@ class FlightFragment : Fragment() {
             val client = OkHttpClient()
             val parameters = HashMap<String, String>()
 
-            val url = getString(R.string.default_leonardo_submit_flight_url)
-            parameters.put("user", this@FlightFragment.preferences.getString("username", "")!!)
-            parameters.put("pass", this@FlightFragment.preferences.getString("password", "")!!)
-            parameters.put("igcfn", args.flight.filename)
-            parameters.put("IGCigcIGC", args.flight.content)
-            parameters.put("Category", category.toString())
-
-
-            //Start type
-            val startTypeIds = this@FlightFragment.resources.getStringArray(R.array.start_type_id)
-            val startType = this@FlightFragment.preferences.getString(
-                getString(R.string.preference_start_type),
-                startTypeIds[0]
-            )
-                ?: startTypeIds[0]
-            if (!startType.isNullOrBlank()) {
-                parameters.put("startType", startType)
-            }
-
-
-            //Manufacturer, Glider Model and Size
-            val manufacturers =
-                this@FlightFragment.resources.getStringArray(R.array.glider_manufacturer)
-            val manufacturer = this@FlightFragment.preferences.getString(
-                getString(R.string.preference_glider_manufacturer),
-                ""
-            )
-                ?: ""
-            val manufacturerId = manufacturers.indexOf(manufacturer)
-            var gliderName = ""
-            if (manufacturerId >= 0) {
-                parameters.put("gliderBrandID", (manufacturerId + 1).toString())
-            } else {
-                gliderName = "$manufacturer "
-            }
-            gliderName += this@FlightFragment.preferences.getString(
-                getString(R.string.preference_glider_model),
-                ""
-            )
-                ?: ""
-            val gliderSize = this@FlightFragment.preferences.getString(
-                getString(R.string.preference_glider_size),
-                ""
-            )
-                ?: ""
-            if (!gliderName.isBlank() && !gliderSize.isBlank()) {
-                gliderName += " $gliderSize"
-            }
-
-            if (gliderName.isNotBlank()) {
-                parameters.put("glider", gliderName)
-            }
-
-
-            // Glider Category
-            val gliderCategoryIds =
-                this@FlightFragment.resources.getStringArray(R.array.glider_category_id)
-            val gliderCategory = this@FlightFragment.preferences.getString(
-                getString(R.string.preference_glider_category),
-                gliderCategoryIds[0]
-            )
-                ?: gliderCategoryIds[0]
-            if (!gliderCategory.isNullOrBlank()) {
-                parameters.put("gliderCat", gliderCategory)
-            }
-
-            // Glider Certification Category
-            val gliderCertificationCategoryIds =
-                this@FlightFragment.resources.getStringArray(R.array.glider_category_id)
-            val gliderCertificationCategory = this@FlightFragment.preferences.getString(
-                getString(R.string.preference_glider_certification),
-                gliderCertificationCategoryIds[0]
-            )
-                ?: gliderCertificationCategoryIds[0]
-            if (!gliderCertificationCategory.isNullOrEmpty()) {
-                parameters.put("gliderCertCategory", gliderCertificationCategory)
-            }
-
+            val url = getString(R.string.default_dhvxc_upload_flights_url)
+            val json = JSONObject()
+            json.put("user", this@FlightFragment.preferences.getString("username", ""))
+            json.put("pass", this@FlightFragment.preferences.getString("password", ""))
+            json.put("igcname", args.flight.filename)
+            json.put("igccontent", args.flight.content)
 
             val content = StringBuilder()
             parameters.forEach { key, value ->
@@ -409,12 +243,11 @@ class FlightFragment : Fragment() {
 
 
             val body = RequestBody.create(
-                MediaType.parse("application/x-www-form-urlencoded"),
-                content.toString()
+                MediaType.parse("application/json"),
+                json.toString(0)
             )
             val request = Request.Builder()
                 .url(url)
-                .header("Accept-Language", "en")
                 .post(body)
                 .build()
             client.newCall(request).enqueue(object : Callback {
@@ -432,75 +265,97 @@ class FlightFragment : Fragment() {
                 }
 
                 override fun onResponse(response: Response?) {
+                    val responseBodyString = response?.body()?.string()
+                    val responseCode = response?.code()
+                    var success = false
+                    var message = "An unknown error occurred"
+                    if (responseBodyString != null) {
+                        try {
+                            val responseJson = JSONObject(responseBodyString)
+                            success = responseJson.getBoolean("success")
+                            message = responseJson.getString("message")
+                        } catch (e: JSONException) {
+                            //TODO: some logging?
+                        }
+
+                    }
                     this@FlightFragment.requireActivity().runOnUiThread {
                         this@FlightFragment.progressBar.visibility = View.GONE
                         this@FlightFragment.progressBar.clearAnimation()
-                    }
-                    if (response == null) {
-                        this@FlightFragment.requireActivity().runOnUiThread {
+                        if (responseCode == null || responseBodyString == null) {
                             AlertDialog.Builder(this@FlightFragment.requireContext())
-                                .setMessage(getString(R.string.alert_text_error_during_upload))
+                                .setMessage(getString(R.string.alert_text_error_during_upload) + "\n" + message)
                                 .setPositiveButton(android.R.string.ok) { dialog, _ ->
                                     dialog.dismiss()
                                 }
                                 .show()
-                        }
-                        return
-                    }
-                    if (response.code() != 200) {
-                        this@FlightFragment.requireActivity().runOnUiThread {
+                        } else if (response.code() == 401) {
                             AlertDialog.Builder(this@FlightFragment.requireContext())
-                                .setMessage(getString(R.string.alert_text_error_during_upload))
+                                .setMessage(getString(R.string.alert_text_error_during_upload) + "\n" + message)
                                 .setPositiveButton(android.R.string.ok) { dialog, _ ->
                                     dialog.dismiss()
                                 }
                                 .show()
-                        }
-                        return
-                    }
-                    CoroutineScope(Dispatchers.IO).launch {
-                        @Suppress("BlockingMethodInNonBlockingContext") //Unfortunately, this library doesn't offer a suspendable function
-                        val responseBody = response.body().string()
-
-                        val alertBuilder = AlertDialog.Builder(this@FlightFragment.requireContext())
-                        val correctedText =
-                            responseBody.replace("href='/", "href='https://www.dhv-xc.de/")
-
-                        val matcher =
-                            Pattern.compile(".*(https://www.dhv-xc.de(/xc/modules){0,1}(/leonardo){0,1}/index\\.php\\?op=show_flight&flightID=[0-9]+).*")
-                                .matcher(correctedText)
-                        if (matcher.find()) {
-                            val group = matcher.group(1)
-                            val text = group?.toString()
-                            if (!text.isNullOrBlank()) {
-                                args.flight.dhvXcFlightUrl = text
-                                val flightDao =
-                                    IgcSyncDatabase.getDatabase(this@FlightFragment.requireContext())
-                                        .flightDao()
-                                flightDao.update(args.flight)
+                        } else if (response.code() != 200) {
+                            parseFlightIdFromUploadResponseMessage(message)
+                            this@FlightFragment.requireActivity().runOnUiThread {
+                                AlertDialog.Builder(this@FlightFragment.requireContext())
+                                    .setMessage(getString(R.string.alert_text_error_during_upload) + "\n" + message)
+                                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                    .show()
                             }
-                        }
-
-
-                        this@FlightFragment.requireActivity().runOnUiThread {
-                            this@FlightFragment.dhvButton?.animation?.cancel()
-                            alertBuilder
-                                .setMessage(
-                                    Html.fromHtml(
-                                        correctedText,
-                                        Html.FROM_HTML_MODE_LEGACY
-                                    )
-                                )
-                                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                                    dialog.dismiss()
+                        } else {
+                            parseFlightIdFromUploadResponseMessage(message)
+                            if (!success) {
+                                this@FlightFragment.requireActivity().runOnUiThread {
+                                    AlertDialog.Builder(this@FlightFragment.requireContext())
+                                        .setMessage(getString(R.string.alert_text_error_during_upload) + "\n" + message)
+                                        .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                            dialog.dismiss()
+                                        }
+                                        .show()
                                 }
-                                .show()
-                                .findViewById<TextView>(android.R.id.message).movementMethod =
-                                LinkMovementMethod.getInstance()
+                            } else {
+                                val alertBuilder =
+                                    AlertDialog.Builder(this@FlightFragment.requireContext())
+                                alertBuilder
+                                    .setMessage(
+                                        Html.fromHtml(
+                                            message,
+                                            Html.FROM_HTML_MODE_LEGACY
+                                        )
+                                    )
+                                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                                    .show()
+                                    .findViewById<TextView>(android.R.id.message).movementMethod =
+                                    LinkMovementMethod.getInstance()
+
+                            }
                         }
                     }
                 }
             })
+        }
+    }
+
+    private fun parseFlightIdFromUploadResponseMessage(message: String) {
+        val regex = getString(R.string.regex_flight_id_parser)
+        val matcher = Pattern.compile(regex)
+            .matcher(message)
+        if (matcher.matches()) {
+            val flightId = matcher.group(1)
+            val flightUrl = "https://dhv-xc.de/flight/" + flightId
+            args.flight.dhvXcFlightUrl = flightUrl
+            CoroutineScope(Dispatchers.IO).launch {
+                val flightDao =
+                    IgcSyncDatabase.getDatabase(this@FlightFragment.requireContext())
+                        .flightDao()
+                flightDao.update(args.flight)
+            }
         }
     }
 }

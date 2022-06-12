@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "de.romankreisel.igcsync"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 32
         versionCode 3
         versionName "0.2.2"
@@ -85,6 +85,7 @@ dependencies {
     def nav_version = "2.4.2"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation 'org.json:json:20220320'
 }
 
 

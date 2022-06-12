@@ -36,6 +36,7 @@
     <string name="marker_start">Start</string>
     <string name="button_map_mode_content_description">Kartenmodus</string>
     <string name="alert_text_error_during_upload">Es ist ein Fehler beim upload aufgetreten, bitte versuche es später erneut.</string>
+    <string name="alert_text_auth_error_during_upload">Ihre Zugangsdaten sind ungültig, stellen Sie bitte sicher den Benutzernamen &amp; das Passwort für den UPLOAD zu verwenden, nicht den Benutzernamen &amp; das Passwort für das Portal selbst.</string>
     <string name="label_offer_upload_to_tandem_cup">Tandem Cup  anbieten</string>
     <string name="label_upload_into">Hochladen für</string>
     <string name="title_about_app">Über diese App</string>
@@ -58,4 +59,5 @@
     <string name="alert_text_no_flight_detected_in_shared_content">Keine (neuen) Flüge in den geteilten Daten aus der anderen Applikation erkannt.</string>
     <string name="alert_text_ImportNewFlight">Ein neuer Flug wurde gefunden, möchtest Du ihn in Dein Logbuch aufnehmen?</string>
     <string name="inform_about_reparse_igc">Aktualisiere Datenbank</string>
+    <string name="default_dhvxc_upload_flights_url">https://de.dhv-xc.de/api/v1/flights</string><!-- There is a special URL with german messages, for this reason this is translateable-->
 </resources>
