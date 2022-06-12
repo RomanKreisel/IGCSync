@@ -8,13 +8,13 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class AlreadyImportedUrl(
-        @PrimaryKey @ColumnInfo(name = "url") var url: String,
-        @ColumnInfo(name = "sha256_checksum", index = true) var sha256Checksum: String,
+    @PrimaryKey @ColumnInfo(name = "url") var url: String,
+    @ColumnInfo(name = "sha256_checksum", index = true) var sha256Checksum: String,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-            parcel.readString() ?: "",
-            parcel.readString() ?: "") {
-    }
+        parcel.readString() ?: "",
+        parcel.readString() ?: ""
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(url)

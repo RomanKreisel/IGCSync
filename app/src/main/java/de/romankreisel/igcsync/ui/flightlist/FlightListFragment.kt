@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
-import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -62,22 +61,22 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
 
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         this.requireActivity().setTitle(R.string.app_name)
         this.preferences = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
         this.flightDao =
-                IgcSyncDatabase.getDatabase(this.requireActivity().applicationContext).flightDao()
+            IgcSyncDatabase.getDatabase(this.requireActivity().applicationContext).flightDao()
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_flight_list, container, false)
         this.recyclerViewFlights =
-                root.findViewById<RecyclerView>(R.id.recycler_view_igc_files)
+            root.findViewById<RecyclerView>(R.id.recycler_view_igc_files)
         this.recyclerViewLayoutManager = LinearLayoutManager(activity)
 
         val flightsAdapter = FlightsAdapter(
-                Collections.unmodifiableList(Collections.emptyList()),
-                this@FlightListFragment
+            Collections.unmodifiableList(Collections.emptyList()),
+            this@FlightListFragment
         )
 
         recyclerViewFlights.apply {
@@ -87,28 +86,28 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
 
         this.flightListViewModel = ViewModelProvider(this).get(FlightListViewModel::class.java)
         this.flightListViewModel.flights = flightDao.getAllAsLivedata(
-                Duration.ofSeconds(
-                        this@FlightListFragment.preferences.getInt(
-                                getString(R.string.preference_minimum_flight_duration_seconds), 60
-                        ).toLong()
-                )
+            Duration.ofSeconds(
+                this@FlightListFragment.preferences.getInt(
+                    getString(R.string.preference_minimum_flight_duration_seconds), 60
+                ).toLong()
+            )
         )
         this.flightListViewModel.flights.observe(viewLifecycleOwner, {
             val myValue = flightListViewModel.flights.value
 
             if (myValue.isNullOrEmpty()) {
                 val igcContent =
-                        resources.openRawResource(R.raw.greifenburg).bufferedReader().readText()
+                    resources.openRawResource(R.raw.greifenburg).bufferedReader().readText()
                 val demoFlight = Flight(
-                        "b40257758c2574f7240b12ec68d87c78065a86ee6d0288845740c0831813ebdd",
-                        "demoflight.igc",
-                        Date(1609081375682),
-                        igcContent,
-                        Date(1597929737000),
-                        Duration.ofHours(2) + Duration.ofMinutes(2) + Duration.ofSeconds(48),
-                        "https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039",
-                        false,
-                        true
+                    "b40257758c2574f7240b12ec68d87c78065a86ee6d0288845740c0831813ebdd",
+                    "demoflight.igc",
+                    Date(1609081375682),
+                    igcContent,
+                    Date(1597929737000),
+                    Duration.ofHours(2) + Duration.ofMinutes(2) + Duration.ofSeconds(48),
+                    "https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039",
+                    false,
+                    true
                 )
                 val demoData = ArrayList<Flight>()
                 demoData.add(demoFlight)
@@ -157,26 +156,21 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
                         flightDao.update(flight)
                     }
                     this@FlightListFragment.requireActivity().runOnUiThread {
-                        this@FlightListFragment.progressBar.progress = (++count * 100) / allFlights.count()
+                        this@FlightListFragment.progressBar.progress =
+                            (++count * 100) / allFlights.count()
                     }
                 }
                 this@FlightListFragment.requireActivity().runOnUiThread {
                     this@FlightListFragment.floatingImportButton.isEnabled = true
                     this@FlightListFragment.progressText.visibility = View.GONE
                     this@FlightListFragment.progressBar.visibility = View.GONE
-                    this@FlightListFragment.preferences.edit().putString(getString(R.string.preference_reparse_igc), reparseNecessaryForVersion).apply()
+                    this@FlightListFragment.preferences.edit().putString(
+                        getString(R.string.preference_reparse_igc),
+                        reparseNecessaryForVersion
+                    ).apply()
                 }
             }
         }
-    }
-
-    override fun onCreateContextMenu(
-            menu: ContextMenu,
-            v: View,
-            menuInfo: ContextMenu.ContextMenuInfo?
-    ) {
-        super.onCreateContextMenu(menu, v, menuInfo)
-
     }
 
 
@@ -188,8 +182,8 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(
-                RECYCLER_LAYOUT_STATE,
-                this.recyclerViewLayoutManager.onSaveInstanceState()
+            RECYCLER_LAYOUT_STATE,
+            this.recyclerViewLayoutManager.onSaveInstanceState()
         )
     }
 
@@ -208,21 +202,21 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
                 val uri = data.data
                 if (uri != null) {
                     this.requireActivity().contentResolver.takePersistableUriPermission(
-                            uri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
                     preferences.edit()
-                            .putString(
-                                    getString(R.string.preference_igc_directory_url),
-                                    uri.toString()
-                            )
-                            .apply()
+                        .putString(
+                            getString(R.string.preference_igc_directory_url),
+                            uri.toString()
+                        )
+                        .apply()
                 }
             }
             CoroutineScope(Dispatchers.IO).launch {
                 IgcSyncDatabase.getDatabase(this@FlightListFragment.requireContext())
-                        .alreadyImportedUrlDao()
-                        .deleteAll()
+                    .alreadyImportedUrlDao()
+                    .deleteAll()
                 this@FlightListFragment.requireActivity().runOnUiThread {
                     this@FlightListFragment.importFlights()
                 }
@@ -234,39 +228,39 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
 
     private fun importFlights() {
         val igcDirectoryUrlString = this.preferences.getString(
-                getString(R.string.preference_igc_directory_url),
-                null
+            getString(R.string.preference_igc_directory_url),
+            null
         )
         if (igcDirectoryUrlString == null || igcDirectoryUrlString.isBlank()) {
             this.startActivityForResult(
-                    Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
-                    REQUEST_CODE_IGC_DATA_DIRECTORY_AND_IMPORT
+                Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
+                REQUEST_CODE_IGC_DATA_DIRECTORY_AND_IMPORT
             )
             return
         }
 
         val igcDirectoryDocumentFile =
-                DocumentFile.fromTreeUri(this.requireContext(), Uri.parse(igcDirectoryUrlString))
+            DocumentFile.fromTreeUri(this.requireContext(), Uri.parse(igcDirectoryUrlString))
 
         if (igcDirectoryDocumentFile == null || !igcDirectoryDocumentFile.exists() || !igcDirectoryDocumentFile.isDirectory || !igcDirectoryDocumentFile.canRead()) {
             Toast.makeText(
-                    this.requireContext(),
-                    getString(R.string.warning_error_accessing_data_directory),
-                    Toast.LENGTH_LONG
+                this.requireContext(),
+                getString(R.string.warning_error_accessing_data_directory),
+                Toast.LENGTH_LONG
             ).show()
             return
         }
         val scanWorkRequest = OneTimeWorkRequest.Builder(ImportWorker::class.java).setInputData(
-                androidx.work.Data.Builder()
-                        .putString("dataUrl", igcDirectoryUrlString)
-                        .putInt(
-                                "minimumFlightDurationSeconds",
-                                this.preferences.getInt(
-                                        getString(R.string.preference_minimum_flight_duration_seconds),
-                                        60
-                                )
-                        )
-                        .build()
+            androidx.work.Data.Builder()
+                .putString("dataUrl", igcDirectoryUrlString)
+                .putInt(
+                    "minimumFlightDurationSeconds",
+                    this.preferences.getInt(
+                        getString(R.string.preference_minimum_flight_duration_seconds),
+                        60
+                    )
+                )
+                .build()
         ).build()
         val workManager = WorkManager.getInstance(this.requireContext())
         this.floatingImportButton.isEnabled = false
@@ -286,8 +280,8 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
                 val text: String
                 if (fileCount > 1) {
                     text = getString(
-                            R.string.label_scan_finished_with_files_found,
-                            workInfo.outputData.getInt("fileCount", 0)
+                        R.string.label_scan_finished_with_files_found,
+                        workInfo.outputData.getInt("fileCount", 0)
                     )
                 } else if (fileCount > 0) {
                     text = getString(R.string.label_scan_finished_with_file_found)
@@ -305,9 +299,9 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
             }
             WorkInfo.State.FAILED -> {
                 Toast.makeText(
-                        this.requireContext(),
-                        getString(R.string.label_scan_failed),
-                        Toast.LENGTH_LONG
+                    this.requireContext(),
+                    getString(R.string.label_scan_failed),
+                    Toast.LENGTH_LONG
                 ).show()
                 this.floatingImportButton.isEnabled = true
                 this.progressBar.visibility = View.GONE
@@ -315,9 +309,9 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
             }
             WorkInfo.State.CANCELLED -> {
                 Toast.makeText(
-                        this.requireContext(),
-                        getString(R.string.label_scan_cancelled),
-                        Toast.LENGTH_LONG
+                    this.requireContext(),
+                    getString(R.string.label_scan_cancelled),
+                    Toast.LENGTH_LONG
                 ).show()
                 this.floatingImportButton.isEnabled = true
                 this.progressBar.visibility = View.GONE
@@ -328,8 +322,8 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
                 val filesTotal = workInfo.progress.getInt("filesTotal", 0)
                 if (filesTotal > 0) {
                     this.progressText.text = getString(
-                            R.string.label_scanning_progress,
-                            (filesProgressed * 100 / filesTotal)
+                        R.string.label_scanning_progress,
+                        (filesProgressed * 100 / filesTotal)
                     )
                     this.progressBar.isIndeterminate = false
                     this.progressBar.progress = (filesProgressed * 100 / filesTotal)
@@ -343,14 +337,14 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
     override fun onItemClicked(flight: Flight) {
         if (flight.isDemo) {
             AlertDialog.Builder(this.context)
-                    .setMessage(
-                            this.requireContext().getString(R.string.message_this_is_a_demo_flight)
-                    )
-                    .setTitle(this.requireContext().getString(R.string.title_demo_flight))
-                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .show()
+                .setMessage(
+                    this.requireContext().getString(R.string.message_this_is_a_demo_flight)
+                )
+                .setTitle(this.requireContext().getString(R.string.title_demo_flight))
+                .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
         val action = FlightListFragmentDirections.actionFirstFragmentToFlightFragment(flight)
         this.requireActivity().findNavController(R.id.recycler_view_igc_files).navigate(action)
@@ -359,7 +353,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
     override fun onItemDeleted(flight: Flight) {
         CoroutineScope(Dispatchers.IO).launch {
             IgcSyncDatabase.getDatabase(this@FlightListFragment.requireContext().applicationContext)
-                    .flightDao().deleteBySha(flight.sha256Checksum)
+                .flightDao().deleteBySha(flight.sha256Checksum)
         }
     }
 
@@ -367,7 +361,7 @@ class FlightListFragment : Fragment(), Observer<WorkInfo>, FlightItemListener {
         CoroutineScope(Dispatchers.IO).launch {
             flight.isFavorite = !flight.isFavorite
             IgcSyncDatabase.getDatabase(this@FlightListFragment.requireContext().applicationContext)
-                    .flightDao().update(flight)
+                .flightDao().update(flight)
         }
     }
 

@@ -10,27 +10,27 @@ import java.util.*
 
 @Entity
 data class Flight(
-        @PrimaryKey @ColumnInfo(name = "sha256_checksum", index = true) var sha256Checksum: String,
-        @ColumnInfo(name = "filename") var filename: String,
-        @ColumnInfo(name = "import_date") var import_date: Date,
-        @ColumnInfo(name = "content") var content: String,
-        @ColumnInfo(name = "start_date") var startDate: Date,
-        @ColumnInfo(name = "duration") var duration: Duration = Duration.ZERO,
-        @ColumnInfo(name = "dhvxc_flight_url") var dhvXcFlightUrl: String? = null,
-        @ColumnInfo(name = "is_favorite") var isFavorite: Boolean = false,
-        @ColumnInfo(name = "is_demo") var isDemo: Boolean = false,
+    @PrimaryKey @ColumnInfo(name = "sha256_checksum", index = true) var sha256Checksum: String,
+    @ColumnInfo(name = "filename") var filename: String,
+    @ColumnInfo(name = "import_date") var import_date: Date,
+    @ColumnInfo(name = "content") var content: String,
+    @ColumnInfo(name = "start_date") var startDate: Date,
+    @ColumnInfo(name = "duration") var duration: Duration = Duration.ZERO,
+    @ColumnInfo(name = "dhvxc_flight_url") var dhvXcFlightUrl: String? = null,
+    @ColumnInfo(name = "is_favorite") var isFavorite: Boolean = false,
+    @ColumnInfo(name = "is_demo") var isDemo: Boolean = false,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-            parcel.readString() ?: "",
-            parcel.readString() ?: "",
-            dateFromLong(parcel.readLong()),
-            parcel.readString() ?: "",
-            dateFromLong(parcel.readLong()),
-            Duration.ofMillis(parcel.readLong()),
-            parcel.readString(),
-            parcel.readByte() != 0.toByte(),
-            parcel.readByte() != 0.toByte()) {
-    }
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        dateFromLong(parcel.readLong()),
+        parcel.readString() ?: "",
+        dateFromLong(parcel.readLong()),
+        Duration.ofMillis(parcel.readLong()),
+        parcel.readString(),
+        parcel.readByte() != 0.toByte(),
+        parcel.readByte() != 0.toByte()
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(sha256Checksum)

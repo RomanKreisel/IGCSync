@@ -16,10 +16,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class FlightsAdapter(
-        flights: List<Flight>,
-        val itemClickListener: FlightItemListener
+    flights: List<Flight>,
+    val itemClickListener: FlightItemListener
 ) :
-        RecyclerView.Adapter<FlightsAdapter.ViewHolder>() {
+    RecyclerView.Adapter<FlightsAdapter.ViewHolder>() {
 
     private val flights: ArrayList<Flight>
 
@@ -29,7 +29,7 @@ class FlightsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
-                LayoutInflater.from(parent.context).inflate(R.layout.igc_file_fragment, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.igc_file_fragment, parent, false)
         val viewHolder = ViewHolder(view)
         viewHolder.contentView = view.findViewById<ConstraintLayout>(R.id.igc_file_layout)
 
@@ -51,14 +51,14 @@ class FlightsAdapter(
         val startDate = flight.startDate
         val myDayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(startDate)
         val myDate = SimpleDateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault())
-                .format(startDate)
+            .format(startDate)
         val myTime = SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.getDefault())
-                .format(startDate)
+            .format(startDate)
         @SuppressLint("SetTextI18n")
         holder.startTimeTextView.text = "$myDayOfWeek $myDate, $myTime"
         val d = flight.duration.seconds
         holder.durationTextView.text =
-                String.format("%d:%02d:%02d", d / 3600, (d % 3600) / 60, (d % 60))
+            String.format("%d:%02d:%02d", d / 3600, (d % 3600) / 60, (d % 60))
         if (flight.dhvXcFlightUrl.isNullOrBlank()) {
             holder.dhvLogoImageView.visibility = View.GONE
         } else {
@@ -77,7 +77,7 @@ class FlightsAdapter(
     override fun getItemCount() = this.flights.count()
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
-            View.OnCreateContextMenuListener {
+        View.OnCreateContextMenuListener {
         private lateinit var flightListener: FlightItemListener
         private lateinit var flight: Flight
         lateinit var contentView: ConstraintLayout
@@ -100,9 +100,9 @@ class FlightsAdapter(
         }
 
         override fun onCreateContextMenu(
-                menu: ContextMenu?,
-                v: View?,
-                menuInfo: ContextMenu.ContextMenuInfo?
+            menu: ContextMenu?,
+            v: View?,
+            menuInfo: ContextMenu.ContextMenuInfo?
         ) {
             if (menu != null && v != null && v.context != null) {
                 //menu.setHeaderTitle("Header")
@@ -111,15 +111,15 @@ class FlightsAdapter(
                     true
                 }
                 menu.add(v.context?.getString(if (flight.isFavorite) R.string.menu_item_unmark_as_favorite else R.string.menu_item_mark_as_favorite))
-                        .setOnMenuItemClickListener {
-                            this.flightListener.onItemMarkedAsFavorite(this.flight)
-                            true
-                        }
+                    .setOnMenuItemClickListener {
+                        this.flightListener.onItemMarkedAsFavorite(this.flight)
+                        true
+                    }
                 menu.add(v.context?.getString(R.string.menu_item_delete))
-                        .setOnMenuItemClickListener {
-                            this.flightListener.onItemDeleted(this.flight)
-                            true
-                        }.setEnabled(!flight.isDemo)
+                    .setOnMenuItemClickListener {
+                        this.flightListener.onItemDeleted(this.flight)
+                        true
+                    }.isEnabled = !flight.isDemo
             }
         }
     }

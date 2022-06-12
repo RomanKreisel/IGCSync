@@ -13,8 +13,6 @@ import de.romankreisel.igcsync.data.model.AlreadyImportedUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 class ImportWorker(context: Context, private var workerParams: WorkerParameters) :
     CoroutineWorker(
@@ -69,7 +67,7 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
                     .putInt("filesTotal", files.count()).build()
             )
             try {
-                val lowerFilename = file.name?.toLowerCase(Locale.getDefault())
+                val lowerFilename = file.name?.lowercase(Locale.getDefault())
                 if (lowerFilename == null || !lowerFilename.endsWith(".igc")) continue //ignore everything but IGCs
                 if (file.length() > 10 * 1024 * 1024) continue //ignore files > 10MByte - IGCs are supposed to be much smaller
 
@@ -105,7 +103,7 @@ class ImportWorker(context: Context, private var workerParams: WorkerParameters)
                         )
                     )
                 } catch (e: IgcException) {
-                    Log.e(this.javaClass.name, "Error importing IGC from ${file.uri.toString()}", e)
+                    Log.e(this.javaClass.name, "Error importing IGC from ${file.uri}", e)
                     this.flightImportHelper.insertAll(AlreadyImportedUrl(file.uri.toString(), ""))
                 }
             } catch (exception: Exception) {

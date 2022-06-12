@@ -12,9 +12,6 @@ import androidx.fragment.app.Fragment
 import de.romankreisel.igcsync.R
 
 class AboutFragment : Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(

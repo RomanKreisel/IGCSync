@@ -221,10 +221,9 @@ class FlightFragment : Fragment() {
 
         this.toggleVisibilityForAllDhvXcButtons()
 
-        this.requireActivity().setTitle(
+        this.requireActivity().title =
             SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
                 .format(args.flight.startDate)
-        )
 
         this.mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         this.mapFragment.onCreate(savedInstanceState)

@@ -23,7 +23,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.nio.charset.Charset
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -45,8 +44,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         val myIntent = this.intent
         if (myIntent != null) {
-            when {
-                myIntent.action == Intent.ACTION_SEND -> {
+            when (myIntent.action) {
+                Intent.ACTION_SEND -> {
                     val clipData = myIntent.clipData
                     val flights = HashMap<String, String>()
                     if (clipData != null) {
@@ -56,20 +55,20 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                             val lines = contentResolver.openInputStream(uri)
                                 ?.bufferedReader(Charset.forName("UTF-8"))?.readText()
                             if (!lines.isNullOrBlank()) {
-                                flights.put(uri.toString(), lines)
+                                flights[uri.toString()] = lines
                             }
                         }
                     }
                     this.importFlights(flights)
                 }
-                myIntent.action == Intent.ACTION_VIEW -> {
+                Intent.ACTION_VIEW -> {
                     val intent = intent
                     val uri = intent.data
                     val lines = contentResolver.openInputStream(uri!!)
                         ?.bufferedReader(Charset.forName("UTF-8"))?.readText()
                     if (lines != null) {
                         val flights = HashMap<String, String>()
-                        flights.set(uri.toString(), lines)
+                        flights[uri.toString()] = lines
                         this.importFlights(flights)
                     }
                 }
@@ -77,7 +76,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
     }
 
-    fun importFlights(flightsUriAndContent: Map<String, String>) {
+    private fun importFlights(flightsUriAndContent: Map<String, String>) {
         val now = Date(System.currentTimeMillis())
         val checksums = HashSet<String>()
         val flightsForImport = ArrayList<Flight>()
@@ -86,13 +85,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 val uri = Uri.parse(it.key)
                 val cursor = contentResolver.query(uri!!, null, null, null, null)
                 var filename = uri.lastPathSegment ?: ""
-                try {
-                    if (cursor != null && cursor.moveToFirst()) {
-                        filename =
-                            cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                cursor.use { c ->
+                    if (c != null && c.moveToFirst()) {
+                        val columnIndex = c.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        if (columnIndex >= 0) {
+                            filename = c.getString(columnIndex)
+                        }
                     }
-                } finally {
-                    cursor?.close()
                 }
                 if (!this@MainActivity.flightImportHelper.flightUrlAlreadyKnown(uri)) {
                     try {
@@ -117,7 +116,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
             }
             this@MainActivity.runOnUiThread {
-                if (flightsForImport.count() <= 0) {
+                if (flightsForImport.isEmpty()) {
                     AlertDialog.Builder(this@MainActivity)
                         .setTitle(getString(R.string.alert_title_no_flights_shared))
                         .setMessage(getString(R.string.alert_text_no_flight_detected_in_shared_content))
@@ -185,9 +184,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         arguments: Bundle?
     ) {
         if (destination.id == R.id.FirstFragment) {
-            getSupportActionBar()?.setDisplayHomeAsUpEnabled(false)
+            supportActionBar?.setDisplayHomeAsUpEnabled(false)
         } else {
-            getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
     }
 }
