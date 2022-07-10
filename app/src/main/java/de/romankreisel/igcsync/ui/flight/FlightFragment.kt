@@ -161,10 +161,11 @@ class FlightFragment : Fragment() {
         this.button_view_in_dhvxc.setOnClickListener {
             this.toggleVisibilityForAllDhvXcButtons()
             //example of an "old" url: https://www.dhv-xc.de/leonardo/index.php?op=show_flight&flightID=1298039
-            val matcher = Pattern.compile(".*(flightId=\\d+).*")
+            //another example:         https://de.dhv-xc.de/xc/modules/leonardo/index.php?op=show_flight&flightID=1298039
+            val matcher = Pattern.compile(".*(flightID=)(\\d+).*")
                 .matcher(args.flight.dhvXcFlightUrl!!)
             if (args.flight.dhvXcFlightUrl!!.contains("leonardo") && matcher.matches()) {
-                val flightId = matcher.group(1)
+                val flightId = matcher.group(2)
                 val flightUrl = "https://dhv-xc.de/flight/" + flightId
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(flightUrl)))
             } else {

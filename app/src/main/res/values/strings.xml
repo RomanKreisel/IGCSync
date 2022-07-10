@@ -13,7 +13,6 @@
     <string name="preference_minimum_flight_duration_seconds" translatable="false">minimum_flight_duration_seconds</string>
     <string name="preference_reparse_igc" translatable="false">ReparseIGCs</string>
 
-    <string name="default_leonardo_submit_flight_url" translatable="false">http://xc.dhv.de/xc/modules/leonardo/flight_submit.php</string>
     <string name="default_dhvxc_upload_flights_url" translatable="true">https://en.dhv-xc.de/api/v1/flights</string> <!-- There is a special URL with german messages, for this reason this is translateable-->
     <string name="regex_flight_id_parser" translatable="false">.*ID (?&lt;flightId&gt;\\d+).*</string>
 
