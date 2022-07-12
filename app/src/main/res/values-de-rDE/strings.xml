@@ -31,13 +31,11 @@
     <string name="label_flight_start_time">Start:</string>
     <string name="label_flight_duration">Dauer:</string>
     <string name="content_description_flight_on_dhvxc">Flug auf DHV-XC verfügbar</string>
-    <string name="button_upload_flightbook">Flugbuch</string>
     <string name="button_view_flight">Anzeigen</string>
     <string name="marker_start">Start</string>
     <string name="button_map_mode_content_description">Kartenmodus</string>
     <string name="alert_text_error_during_upload">Es ist ein Fehler beim upload aufgetreten, bitte versuche es später erneut.</string>
     <string name="alert_text_auth_error_during_upload">Ihre Zugangsdaten sind ungültig, stellen Sie bitte sicher den Benutzernamen &amp; das Passwort für den UPLOAD zu verwenden, nicht den Benutzernamen &amp; das Passwort für das Portal selbst.</string>
-    <string name="label_offer_upload_to_tandem_cup">Tandem Cup  anbieten</string>
     <string name="label_upload_into">Hochladen für</string>
     <string name="title_about_app">Über diese App</string>
     <string name="action_about_this_app">Über diese App</string>

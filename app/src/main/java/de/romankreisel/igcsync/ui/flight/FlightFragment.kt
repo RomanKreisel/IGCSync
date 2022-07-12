@@ -41,7 +41,7 @@ import java.util.regex.Pattern
 
 
 class FlightFragment : Fragment() {
-    private lateinit var button_upload_fun_pg: Button
+    private lateinit var button_upload: Button
     private lateinit var progressBar: ProgressBar
     private var googleMap: GoogleMap? = null
     private lateinit var button_view_in_dhvxc: Button
@@ -150,9 +150,9 @@ class FlightFragment : Fragment() {
             this.toggleVisibilityForAllDhvXcButtons()
         }
 
-        this.button_upload_fun_pg =
-            this.requireView().findViewById(R.id.button_upload_to_dhvxc)!!
-        this.button_upload_fun_pg.setOnClickListener {
+        this.button_upload =
+            this.requireView().findViewById(R.id.button_upload)!!
+        this.button_upload.setOnClickListener {
             this.upload()
         }
 
@@ -201,11 +201,11 @@ class FlightFragment : Fragment() {
             if (args.flight.dhvXcFlightUrl.isNullOrBlank()) View.GONE else visibility
 
         //Before we check for all conditions, we disable all buttons first:
-        this.button_upload_fun_pg.visibility = View.GONE
+        this.button_upload.visibility = View.GONE
         if (args.flight.isDemo) {
             return
         }
-        this.button_upload_fun_pg.visibility = visibility
+        this.button_upload.visibility = visibility
     }
 
     private fun upload() {

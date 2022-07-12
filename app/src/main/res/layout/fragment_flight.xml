@@ -67,7 +67,7 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/button_upload_to_dhvxc"
+            android:id="@+id/button_upload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
