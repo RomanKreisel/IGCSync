@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
@@ -108,17 +107,7 @@ class SettingsFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeL
             }
         }
 
-        root.findViewById<CheckBox>(R.id.checkbox_offer_upload_to_tandem).apply {
-            isChecked = preferences.getBoolean(
-                getString(R.string.preference_offer_upload_tandem_cup),
-                false
-            )
-            setOnCheckedChangeListener { _, isChecked ->
-                preferences.edit()
-                    .putBoolean(getString(R.string.preference_offer_upload_tandem_cup), isChecked)
-                    .apply()
-            }
-        }
+
 
         preferences.registerOnSharedPreferenceChangeListener(this)
         this.updateViewModel(preferences)
