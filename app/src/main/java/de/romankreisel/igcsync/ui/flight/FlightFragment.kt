@@ -127,9 +127,8 @@ class FlightFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_flight, container, false)
     }
 
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(FlightViewModel::class.java)
 
         requireView().findViewById<ImageButton>(R.id.button_map_mode)?.setOnClickListener {
