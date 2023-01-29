@@ -17,3 +17,6 @@ Die Flüge können anschließend betrachtet und für die Wettbewerbe des Deutsch
 <img src="https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/ScreenshotsSmartphone/Screenshot_20201227_224918.png" alt="Smartphone Tracklist" width="49%"/> <img src="https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/ScreenshotsSmartphone/Screenshot_20201227_224923.png" alt="Smartphone Tracklist" width="49%"/> <img src="https://raw.githubusercontent.com/RomanKreisel/IGCSync/main/PlayStore/ScreenshotsTablet/Screenshot_20201227_225134.png" alt="Tablet Track" height="600"/>
 
 <iframe width="380" height="840" src="https://www.youtube-nocookie.com/embed/DsxOZnudhiY" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Datenschutzerklärung
+Die Datenschutzerklärung findest Du [hier](datenschutz.html)
